@@ -29,3 +29,9 @@
 *.app
 *.EXE
 *.OBJ
+
+# Desktop files
+*.DSK
+
+# Backup files
+*.BAK
