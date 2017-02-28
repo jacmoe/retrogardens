@@ -98,7 +98,7 @@ A CPU speed of 50% works well.
 Press `Ctrl+F10` to grab the input, and press `CTRL+F11` to decrease CPU cycles.  
 Click `CTRL+F10` to release the mouse again.
 
-See the [dosboxspecialkeys][DosBox - Special Keys] wiki page for a list of key combos that you can use with it.
+See the [DosBox - Special Keys][dosboxspecialkeys] wiki page for a list of key combos that you can use with it.
 
 #### DosBox Window
 
