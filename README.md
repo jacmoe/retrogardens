@@ -22,7 +22,8 @@ Also, besure to check out Fabien Sanglard's excellent article [Let's Compile Lik
 
 ### Where to get it
 #### BC3.1 and TP7
-If you don't already have BC3.1 and TP7 lying around, then you can grab them from [WinWorld][winworld] - go to the *Library* section.
+If you don't already have BC3.1, TASM and TP7 lying around, then you can grab them from [WinWorld][winworld] - go to the *Library* section.
+
 #### DosBox
 Download it from [DosBox.com][dosbox]
 
@@ -76,7 +77,7 @@ mount a -t floppy ~/DOS/box_disks/floppy
 
 Now, what's in the floppy disk directory will be available from the A drive inside of DosBox.
 
-**Insert and Change floppy disks**
+**Insert and Change floppy disks**  
 Simply open a floppy image ( `disk01.img` ) in a disk image viewer, select all files and copy them to the `floppy` directory.
 
 When the installation program asks for the next disk, simply delete the files in `floppy` and copy the files of the next disk into it.
@@ -94,8 +95,10 @@ I have no idea how to swap CDs - but this is DOS and 1995  and I don't recall ev
 
 #### Cpu cycles
 A CPU speed of 50% works well.  
-Click on the DosBox window with your mouse to grab the input, and press CTRL+F11 to decrease CPU cycles.  
-Click CTRL+F10 to release the mouse again.
+Press `Ctrl+F10` to grab the input, and press `CTRL+F11` to decrease CPU cycles.  
+Click `CTRL+F10` to release the mouse again.
+
+See the [dosboxspecialkeys][DosBox - Special Keys] wiki page for a list of key combos that you can use with it.
 
 #### DosBox Window
 
@@ -113,7 +116,7 @@ autolock=true
 
 ```
 Then the mouse will not be grabbed automatically by the DosBox window.  
-You can use `Ctrl+F10` to ungrab it.
+You can use `Ctrl+F10` to grab / ungrab it.
 
 --------------------------------
 
@@ -177,7 +180,9 @@ Copy the files to the `bin` directory and run `PATCH PATCH700` (or PATCH701, dep
 
 [dosbox]: https://www.dosbox.com/download.php?main=1 "DosBox - Downloads"
 
-[dosboxwiki] https://www.dosbox.com/wiki/Basic_Setup_and_Installation_of_DosBox "DosBox basic setup"
+[dosboxwiki]: https://www.dosbox.com/wiki/Basic_Setup_and_Installation_of_DosBox "DosBox Wiki - basic setup"
+
+[dosboxspecialkeys]: http://www.dosbox.com/wiki/Special_Keys "DosBox Wiki - Special Keys"
 
 [tppatch]: http://www.ipnet6.org/tppatch.html "Crt patch for TP7"
 
