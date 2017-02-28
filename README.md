@@ -3,4 +3,17 @@
 
 ![palette][pal]
 
+[Crt patch for TP7][tppatch]
+
+
+
+
+
+
+
+
+
+
+[tppatch]: http://www.ipnet6.org/tppatch.html "Crt patch for TP7"
+
 [pal]: https://github.com/jacmoe/retrogardens/raw/master/screenshots/pal.jpg "Palette"
