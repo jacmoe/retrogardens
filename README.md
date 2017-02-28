@@ -133,7 +133,42 @@ Use the ALT key to quickly issue commands - for example use `ALT+P ENTER` to ope
 Use `ALT+[number]` to quickly switch between windows.
 
 #### Project settings
-TBD
+When a project is open, enter the Options menu - `ALT+O` - and make sure that the following is set:
+
+**Application**  
+Dos Standard
+
+**Code Generation**  
+Model : Large  
+
+**Advanced Code Generation**  
+Floating Point : 80287/387  
+Instruction Set : 80386  
+
+**Entry/Exit Code Generation**  
+Prolog/Epilog Code Generation : Dos standard  
+
+**C++ Options**  
+Use C++ Compiler : C++ always  
+
+**Linker**  
+Output : Standard DOS EXE  
+
+**Directories**  
+Modify the Include / Library directories as needed.  
+Consider adding `C:\GARD\BC31\[project_dir]` to the Source Directories.  
+
+My *Include Directories* is:
+```
+C:\BORLANDC\INCLUDE;C:\GARD\BC31\COMMON
+```
+My *Library Directories* is:
+```
+C:\BORLANDC\LIB;C:\GARD\BC31\COMMON
+```
+
+Make sure that you save the settings before exiting: `ALT+O S K`
+
 
 #### ASM and Turbo Assember
 
