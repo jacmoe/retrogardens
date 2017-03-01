@@ -118,6 +118,9 @@ autolock=true
 Then the mouse will not be grabbed automatically by the DosBox window.  
 You can use `Ctrl+F10` to grab / ungrab it.
 
+#### DosBox Oddities
+If you move files around on your C directory from outside of DosBox, you need to restart it to make DOS see it.
+
 --------------------------------
 
 ### Borland C++ 3.1
