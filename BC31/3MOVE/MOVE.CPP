@@ -2,26 +2,33 @@
 #include <dos.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "screen.h"
 #include "bresn.h"
+#include "myio.h"
+#include "keyboard.h"
+
 
 char maze[16][16] = {
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1},
-	{1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1},
-	{1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1},
-	{1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1},
-	{1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1},
-	{1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1},
-	{1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1},
-	{1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+	{1, 1, 1, 1,    1, 1, 1, 1,    1, 1, 1, 1,    1, 1, 1, 1},
+	{1, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 1},
+	{1, 0, 1, 0,    1, 1, 1, 0,    0, 0, 0, 0,    1, 1, 0, 1},
+	{1, 0, 1, 0,    1, 0, 1, 0,    1, 1, 1, 0,    1, 1, 0, 1},
+
+	{1, 0, 1, 0,    1, 0, 1, 0,    0, 0, 1, 0,    0, 1, 0, 1},
+	{1, 0, 1, 1,    1, 0, 1, 0,    1, 0, 1, 1,    1, 1, 0, 1},
+	{1, 0, 0, 0,    0, 0, 0, 0,    1, 0, 0, 0,    0, 0, 0, 1},
+	{1, 0, 1, 1,    1, 0, 1, 0,    1, 1, 1, 0,    1, 1, 0, 1},
+
+	{1, 0, 1, 0,    0, 0, 1, 0,    0, 0, 1, 0,    1, 1, 0, 1},
+	{1, 0, 1, 0,    1, 0, 1, 1,    1, 1, 1, 0,    1, 1, 0, 1},
+	{1, 0, 1, 0,    1, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 1},
+	{1, 0, 1, 1,    1, 0, 1, 0,    1, 0, 1, 1,    1, 1, 0, 1},
+
+	{1, 0, 0, 0,    1, 0, 1, 0,    1, 0, 0, 0,    0, 1, 0, 1},
+	{1, 0, 1, 1,    1, 0, 1, 1,    1, 1, 1, 1,    1, 1, 0, 1},
+	{1, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 1},
+	{1, 1, 1, 1,    1, 1, 1, 1,    1, 1, 1, 1,    1, 1, 1, 1}
 };
 
 typedef struct xy {
@@ -33,6 +40,10 @@ struct xy left[4] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 struct xy right[4] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 struct xy pos = {1,3};
 
+struct event_struct {
+	int go_forward, go_back, go_left, go_right, quit_game;
+};
+
 int direction = 3;
 int visibility = 4;
 
@@ -41,6 +52,8 @@ void draw_box(char*);
 
 void main()
 {
+	struct xy newpos;
+
 	// Create pointer to video memory
 	char far* screen = (char far*)MK_FP(0xa000, 0);
 
@@ -50,14 +63,63 @@ void main()
 	// Put display in mode 13h
 	setgmode(0x13);
 
-	// Draw window on display
-	draw_box(screen);
 
-	// Draw the maze
-	draw_maze(screen);
+	Keyboard kb;
 
-	// Wait for the user to hit a key
-	while(!kbhit());
+	//long framect = 0;
+	//clock_t start = clock();
+
+	// Run the loop
+	while(!kb.wasPressed(esckey))
+	{
+
+		// Draw window on display
+		draw_box(screen);
+
+		// Draw the maze
+		draw_maze(screen);
+
+		// Do we want to move forward?
+		if(kb.isKeyDown(uparrow))
+		{
+			newpos.x = pos.x + increment[direction].x;
+			newpos.y = pos.y + increment[direction].y;
+			if(!maze[newpos.x][newpos.y])
+			{
+				pos.x = newpos.x;
+				pos.y = newpos.y;
+			}
+		}
+		// or do we want to go backward?
+		else if(kb.isKeyDown(dnarrow))
+		{
+			newpos.x = pos.x - increment[direction].x;
+			newpos.y = pos.y - increment[direction].y;
+			if(!maze[newpos.x][newpos.y])
+			{
+				pos.x = newpos.x;
+				pos.y = newpos.y;
+			}
+		}
+		// Do we want to turn left?
+		if(kb.isKeyDown(lfarrow))
+		{
+			--direction;
+			if(direction < 0)
+				direction = 3;
+		}
+		// or do we want to turn right?
+		else if(kb.isKeyDown(rtarrow))
+		{
+			direction++;
+			if(direction > 3)
+				direction = 0;
+		}
+		//framect++;
+		cls(screen);
+	}
+	//while(!kb.wasPressed(esckey));
+	//while(!kbhit());
 
 	// restore old video mode
 	setgmode(oldmode);
