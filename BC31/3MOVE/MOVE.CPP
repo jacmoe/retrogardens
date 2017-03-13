@@ -55,7 +55,9 @@ void main()
 	struct xy newpos;
 
 	// Create pointer to video memory
-	char far* screen = (char far*)MK_FP(0xa000, 0);
+	char far* screen_buffer = (char far*)MK_FP(0xa000, 0);
+
+	//char far* screen_buffer = new unsigned char [64000];
 
 	// Save previous video mode
 	int oldmode = *(int*)MK_FP(0x40, 0x49);
@@ -63,21 +65,28 @@ void main()
 	// Put display in mode 13h
 	setgmode(0x13);
 
+	cls(screen_buffer);
 
 	Keyboard kb;
 
-	//long framect = 0;
-	//clock_t start = clock();
+	long ticks = 6;
+	clock_t last_frame = clock();
 
 	// Run the loop
 	while(!kb.wasPressed(esckey))
 	{
 
 		// Draw window on display
-		draw_box(screen);
+		draw_box(screen_buffer);
 
 		// Draw the maze
-		draw_maze(screen);
+		draw_maze(screen_buffer);
+
+		putwindow(0, 0, 320, 200, screen_buffer);
+
+		// pause
+		while((clock() - last_frame) < ticks);
+		last_frame = clock();
 
 		// Do we want to move forward?
 		if(kb.isKeyDown(uparrow))
@@ -116,11 +125,13 @@ void main()
 				direction = 0;
 		}
 		//framect++;
-		cls(screen);
+		cls(screen_buffer);
 	}
 	//while(!kb.wasPressed(esckey));
 	//while(!kbhit());
 
+	// Release memory
+	delete screen_buffer;
 	// restore old video mode
 	setgmode(oldmode);
 }
