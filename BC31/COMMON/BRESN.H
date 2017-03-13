@@ -1,12 +1,2 @@
-// BRESNHAM.H
-// include file containing prototype for assembler implementation of
-// Bresenham's line drawing algorithm in BRESNHAM.ASM
 
-#ifndef __BRESNHAM__
-#define __BRESNHAM__
-
-extern "C" {
-	void linedraw(int,int,int,int,int,char far *);
-}
-
-#endif
+void linedraw(int x1,int y1,int x2,int y2,int color,char far *screen);

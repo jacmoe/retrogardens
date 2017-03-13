@@ -51,7 +51,7 @@ void main()
 	int oldmode = *(int*)MK_FP(0x40, 0x49);
 
 	// Put display in mode 13h
-	setgmode(0x13);
+	setmode(0x13);
 
 	// Draw window on display
 	draw_box(screen);
@@ -63,7 +63,7 @@ void main()
 	while(!kbhit());
 
 	// restore old video mode
-	setgmode(oldmode);
+	setmode(oldmode);
 }
 
 // Draw the maze stored in array maze[] into video

@@ -3,10 +3,11 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <mem.h>
 #include "screen.h"
 #include "bresn.h"
-#include "myio.h"
-#include "keyboard.h"
+#include "jmio.h"
+#include "evntmngr.h"
 
 
 char maze[16][16] = {
@@ -40,12 +41,14 @@ struct xy left[4] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 struct xy right[4] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 struct xy pos = {1,3};
 
-struct event_struct {
-	int go_forward, go_back, go_left, go_right, quit_game;
-};
+const int DELAY = 10000;
+
+int lastevent = 0;
 
 int direction = 3;
 int visibility = 4;
+
+void putbuffer(unsigned char far*, int, int);
 
 void draw_maze(char*);
 void draw_box(char*);
@@ -54,10 +57,17 @@ void main()
 {
 	struct xy newpos;
 
-	// Create pointer to video memory
-	char far* screen_buffer = (char far*)MK_FP(0xa000, 0);
+	// Input events requested by the program
+	int event_mask;
 
-	//char far* screen_buffer = new unsigned char [64000];
+	// Initialize event manager
+	init_events();
+
+	// set event mask to keyboard
+	event_mask = KEYBOARD_EVENTS;
+
+	// Clear the screen
+	cls((char*)MK_FP(0xa000, 0));
 
 	// Save previous video mode
 	int oldmode = *(int*)MK_FP(0x40, 0x49);
@@ -65,13 +75,15 @@ void main()
 	// Put display in mode 13h
 	setgmode(0x13);
 
-	cls(screen_buffer);
+	// Create video buffer
+	char far* screen_buffer = new unsigned char [64000];
 
-	Keyboard kb;
+	// Draw window on display
+	draw_box(screen_buffer);
+	// move offscreen buffer to video ram
+	blitscreen(screen_buffer);
 
-	long ticks = 6;
-	clock_t last_frame = clock();
-
+#if 0
 	// Run the loop
 	while(!kb.wasPressed(esckey))
 	{
@@ -82,7 +94,7 @@ void main()
 		// Draw the maze
 		draw_maze(screen_buffer);
 
-		putwindow(0, 0, 320, 200, screen_buffer);
+		putbuffer(screen_buffer, 0, SCREEN_HEIGHT);
 
 		// pause
 		while((clock() - last_frame) < ticks);
@@ -128,13 +140,30 @@ void main()
 		cls(screen_buffer);
 	}
 	//while(!kb.wasPressed(esckey));
-	//while(!kbhit());
+#endif
+	// Clear the screen
+	//cls((char*)MK_FP(0xa000, 0));
+	//cls(screen_buffer);
+
+	while(!kbhit());
 
 	// Release memory
 	delete screen_buffer;
 	// restore old video mode
 	setgmode(oldmode);
 }
+
+// Move offscreen buffer into video RAM
+void putbuffer(unsigned char far* screenbuf, int y1, int height)
+{
+	// Create pointer to video memory
+	char far* screen = (char far*)MK_FP(0xa000, 0);
+
+	memmove(screen + y1 * SCREEN_WIDTH,
+			screenbuf + y1 * SCREEN_WIDTH,
+			height * SCREEN_WIDTH);
+}
+
 
 // Draw the maze stored in array maze[] into video
 // memory at address screen.

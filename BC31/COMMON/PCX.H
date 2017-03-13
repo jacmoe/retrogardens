@@ -1,6 +1,3 @@
-#ifndef __PCX__                  // added this for build protection
-#define __PCX__
-
 #define	NO_ERROR 0
 #define FILE_NOT_OPENED 1
 #define INSUFFICIENT_MEMORY 2
@@ -23,25 +20,18 @@ struct pcx_header {
 	char filler[58];
 };
 
-
 struct pcx_struct {
 	pcx_header header;
 	unsigned char far *image;
-	unsigned char far *cimage;
 	unsigned char palette[3*256];
-	int clength;
 };
 
 class Pcx
 {
 	private:
-		int infile;
-		void load_image(int pcxfile,pcx_struct *pcx);
-		void load_palette(int pcxfile,pcx_struct *pcx);
-		int start_of_run(unsigned char * image,long ptr);
+		FILE *infile;
+		void load_image(FILE *pcxfile,pcx_struct *pcx);
+		void load_palette(FILE *pcxfile,pcx_struct *pcx);
 	public:
 		int load(char far *filename,pcx_struct *pcx);
-		int compress(pcx_struct *pcx);
 };
-
-#endif

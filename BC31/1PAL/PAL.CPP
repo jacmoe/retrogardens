@@ -13,7 +13,7 @@ void main(void)
 	char far *screen = (char*)MK_FP(0xa000,0);
 
 	// Set video mode
-	setgmode(0x13);
+	setmode(0x13);
 
 	// Draw a 16 by 16 matrix of squares in the default colours
 	for(int square = 0; square < 256; square++)
@@ -25,6 +25,6 @@ void main(void)
 	while(!kbhit());
 
 	// Reset original video mode:
-	setgmode(oldmode);
+	setmode(oldmode);
 
 }
