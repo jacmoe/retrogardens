@@ -157,6 +157,9 @@ Use C++ Compiler : C++ always
 **Linker**  
 Output : Standard DOS EXE  
 
+**Debugger**
+Program Heap Size : 350 K bytes  
+
 **Directories**  
 Modify the Include / Library directories as needed.  
 Consider adding `C:\GARD\BC31\[project_dir]` to the Source Directories.  
@@ -208,6 +211,14 @@ I used the first patch, and checked my TP7 version to figure out which patch to 
 Copy the files to the `bin` directory and run `PATCH PATCH700` (or PATCH701, depending on the date of your TP7).
 
 
+--------------------------------
+
+## Credits
+* General ideas and code from Christopher Lampton's book [Gardens of Imagination][gardens] (1994 - Waite Group)
+* VGA code from David Brackeen's [256-Color VGA Programming in C][vgainc] tutorial.
+* Keyboard code from Al Stevens' [Raycaster article - Dr. Dobb's Journal][raycast]
+
+Some code from the *dos/programming* section of the [x2ftp.oulu.fi mirror][x2ftp]
 
 --------------------------------
 
@@ -225,3 +236,11 @@ Copy the files to the `bin` directory and run `PATCH PATCH700` (or PATCH701, dep
 [tppatch]: http://www.ipnet6.org/tppatch.html "Crt patch for TP7"
 
 [pal]: https://github.com/jacmoe/retrogardens/raw/master/screenshots/pal.jpg "Palette"
+
+[gardens]: https://www.amazon.com/Gardens-Imagination-Programming-Maze-Games/dp/187873959X "Gardens of Imagination"
+
+[raycast]: http://www.drdobbs.com/windows/windows-casting-rays-and-developer-days/windows/sourcecode/windows-casting-rays-and-developer-days/30300258 "Raycaster"
+
+[vgainc]: http://www.brackeen.com/vga/index.html "256-Color VGA Programming in C"
+
+[x2ftp]: http://ftp.lanet.lv/ftp/mirror/x2ftp/msdos/programming/ "x2ftp.oulu.fi mirror"

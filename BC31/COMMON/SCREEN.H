@@ -103,6 +103,10 @@ void line(int x1, int y1, int x2, int y2, byte color);
 /* buffered version */
 void line_buf(int x1, int y1, int x2, int y2, byte color, byte* buffer);
 
+/* draw a vertical line on x, from y1 to y2 */
+/* buffered version */
+void vert_line_buf(int x, int y1, int y2, byte color, byte* buffer);
+
 /* draws a rectangle */
 void rect(int left, int top, int right, int bottom, byte color);
 

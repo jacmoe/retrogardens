@@ -268,6 +268,28 @@ void line_buf(int x1, int y1, int x2, int y2, byte color, byte* buffer)
   }
 }
 
+/* draw a vertical line on x, from y1 to y2 */
+/* buffered version */
+void vert_line_buf(int x, int y1, int y2, byte color, byte* buffer)
+{
+	if(y2 < y1)
+	{ // swap y1 and y2
+		y1 += y2;
+		y2 = y1 - y2;
+		y1 -= y2;
+	}
+	if(y2 < 0 || y1 >= SCREEN_HEIGHT || x < 0 || x >= SCREEN_WIDTH)
+	{ // no single point of the line is on the screen
+		return;
+	}
+	if(y1 < 0) y1 = 0; // clip
+	if(y2 >= SCREEN_WIDTH) y2 = SCREEN_HEIGHT - 1; // clip
+	for(int y = y1; y <= y2; y++)
+	{
+		plot_pixel_buf(x, y, color, buffer);
+	}
+}
+
 /* draws a rectangle */
 void rect(int left, int top, int right, int bottom, byte color)
 {
