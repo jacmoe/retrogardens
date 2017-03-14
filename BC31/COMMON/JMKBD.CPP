@@ -1,6 +1,6 @@
 // --------- keyboard.cpp
 
-#include "keyboard.h"
+#include "jmkbd.h"
 
 void interrupt (*Keyboard::oldkbint)(...);
 
