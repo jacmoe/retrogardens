@@ -1,40 +1,32 @@
-#ifndef __SCREEN__
-#define __SCREEN__
+#ifndef __SCREEN_H__
+#define __SCREEN_H__
 
-const SCREEN_WIDTH=320,SCREEN_HEIGHT=200;
+#include <stdio.h>
+#include <stdlib.h>
+#include <dos.h>
 
-// in SCREENC.CPP
+#define VIDEO_INT			0x10		/* the BIOS video interrupt. */
+#define WRITE_DOT			0x0C		/* BIOS func to plot a pixel */
+#define SET_MODE			0x00		/* BIOS func to set video mode */
+#define VGA_256_COLOR_MODE	0x13		/* used to set 256 color mode */
+#define TEXT_MODE			0x03		/* used to set 80x25 text mode */
 
-void SetGfxBuffer( void far* theBuffer );
-void far *XyToPtr(int x, int y);
-void WritePixel(int x, int y, char color);
-void GetImage(int x1, int y1, int x2, int y2, char *buffer);
-void PutImage(int x1, int y1, int x2, int y2, char *buffer);
-void ReadPalette(int start, int number, char* palette);
-void ClrPalette(int start, int number);
-void WaitVbi();
-void ClearScr(char color);
-void BarFill(int x1, int y1, int x2, int y2, char color);
-void Line(int x1, int y1, int x2, int y2, char color);
-int BufSize( int x1, int y1, int x2, int y2 );
+#define VIDEO_MEM			0xA0000000L	/* video memory location */
 
-// in SCREEN.ASM
+#define SCREEN_WIDTH		320			/* mode 0x13 width in pixels */
+#define SCREEN_HEIGHT		200			/* mode 0x13 height in pixels */
+#define NUM_COLORS			256			/* mode 0x13 number of colors */
 
-extern "C" {
-	void cls(char far *screen_adr);
-	void setgmode(int mode);
-	void setpalette(char far *color_regs,int firstreg,int numregs);
-	void putwindow(int,int,int,int,char far *);
-	void clrwin(int,int,int,int,char far *);
-  void blitscreen( void far* buffer );
-  void putimage( int x1, int y1, int xdim, int ydim, void far* sbuf,
-  void far* dbuf);
-	void ctransput(void far *sbuffer, void far *dbuffer);
-  void transput( int x1, int y1, int x2, int y2, void far* sbuffer,
-  void far* dbuffer );
-  void fadepalin(int start, int count, const char* palette);
-  void fadepalout(int start, int count);
-  int detectvga();
-}
+typedef unsigned char byte;
+typedef unsigned short word;
+
+/* sets the video mode */
+void set_mode(byte mode);
+
+/* plots a pixel by writing directly to video memory */
+void plot_pixel(int x, int y, byte color);
+
+/* plots a pixel by using BIOS function 0x0C (write dot) */
+void plot_pixel_slow(int x, int y, byte color);
 
 #endif

@@ -48,10 +48,8 @@ int lastevent = 0;
 int direction = 3;
 int visibility = 4;
 
-void putbuffer(unsigned char far*, int, int);
-
-void draw_maze(char*);
-void draw_box(char*);
+void draw_maze();
+void draw_box();
 
 void main()
 {
@@ -79,29 +77,34 @@ void main()
 	char far* screen_buffer = new unsigned char [64000];
 
 	// Draw window on display
-	draw_box(screen_buffer);
+	draw_box();
+	draw_maze();
 	// move offscreen buffer to video ram
-	blitscreen(screen_buffer);
+	//blitscreen(screen_buffer);
 
-#if 0
 	// Run the loop
-	while(!kb.wasPressed(esckey))
+	while(1)
 	{
+		int event = getevent(event_mask);
+		if(event&TABKEY) break;
 
 		// Draw window on display
-		draw_box(screen_buffer);
+		draw_box();
 
 		// Draw the maze
-		draw_maze(screen_buffer);
+		draw_maze();
 
-		putbuffer(screen_buffer, 0, SCREEN_HEIGHT);
+		//clrscr();
+		//clrwin(0, 0, 320, 200, screen_buffer);
+		//putbuffer(screen_buffer, 0, SCREEN_HEIGHT);
 
 		// pause
-		while((clock() - last_frame) < ticks);
-		last_frame = clock();
+		//while((clock() - last_frame) < ticks);
+		//last_frame = clock();
 
 		// Do we want to move forward?
-		if(kb.isKeyDown(uparrow))
+		event = getevent(event_mask);
+		if(event&UP_ARROW)
 		{
 			newpos.x = pos.x + increment[direction].x;
 			newpos.y = pos.y + increment[direction].y;
@@ -112,7 +115,7 @@ void main()
 			}
 		}
 		// or do we want to go backward?
-		else if(kb.isKeyDown(dnarrow))
+		else if(event&DOWN_ARROW)
 		{
 			newpos.x = pos.x - increment[direction].x;
 			newpos.y = pos.y - increment[direction].y;
@@ -122,52 +125,31 @@ void main()
 				pos.y = newpos.y;
 			}
 		}
+		event = getevent(event_mask);
 		// Do we want to turn left?
-		if(kb.isKeyDown(lfarrow))
+		if(event&LEFT_ARROW)
 		{
 			--direction;
 			if(direction < 0)
 				direction = 3;
 		}
 		// or do we want to turn right?
-		else if(kb.isKeyDown(rtarrow))
+		else if(event&RIGHT_ARROW)
 		{
 			direction++;
 			if(direction > 3)
 				direction = 0;
 		}
 		//framect++;
-		cls(screen_buffer);
+		//cls(screen_buffer);
 	}
-	//while(!kb.wasPressed(esckey));
-#endif
-	// Clear the screen
-	//cls((char*)MK_FP(0xa000, 0));
-	//cls(screen_buffer);
 
-	while(!kbhit());
-
-	// Release memory
-	delete screen_buffer;
 	// restore old video mode
 	setgmode(oldmode);
 }
 
-// Move offscreen buffer into video RAM
-void putbuffer(unsigned char far* screenbuf, int y1, int height)
-{
-	// Create pointer to video memory
-	char far* screen = (char far*)MK_FP(0xa000, 0);
-
-	memmove(screen + y1 * SCREEN_WIDTH,
-			screenbuf + y1 * SCREEN_WIDTH,
-			height * SCREEN_WIDTH);
-}
-
-
-// Draw the maze stored in array maze[] into video
-// memory at address screen.
-void draw_maze(char* screen)
+// Draw the maze stored in array maze[]
+void draw_maze()
 {
 	struct xy block, lblock, rblock;
 	int oldleft, oldright;
@@ -196,30 +178,30 @@ void draw_maze(char* screen)
 				// If not, draw wall
 				if (maze[block.x][block.y])
 				{
-					linedraw(82, 19, 135, 44, 15, screen);
-					linedraw(135, 44, 135, 93, 15, screen);
-					linedraw(135, 93, 82, 118, 15, screen);
+					Line(82, 19, 135, 44, 15);
+					Line(135, 44, 135, 93, 15);
+					Line(135, 93, 82, 118, 15);
 				}
 				else // Else draw opening
 				{
-					linedraw(82, 44, 135, 44, 15, screen);
-					linedraw(135, 44, 135, 93, 15, screen);
-					linedraw(135, 93, 82, 93, 15, screen);
+					Line(82, 44, 135, 44, 15);
+					Line(135, 44, 135, 93, 15);
+					Line(135, 93, 82, 93, 15);
 				}
 
 				// Is wall open to the right?
 				// If not, draw wall
 				if (maze[rblock.x][rblock.y])
 				{
-					linedraw(294, 19, 242, 44, 15, screen);
-					linedraw(242, 44, 242, 93, 15, screen);
-					linedraw(294, 118, 242, 93, 15, screen);
+					Line(294, 19, 242, 44, 15);
+					Line(242, 44, 242, 93, 15);
+					Line(294, 118, 242, 93, 15);
 				}
 				else	// Else draw opening
 				{
-					linedraw(294, 44, 242, 44, 15, screen);
-					linedraw(242, 44, 242, 93, 15, screen);
-					linedraw(242, 93, 294, 93, 15, screen);
+					Line(294, 44, 242, 44, 15);
+					Line(242, 44, 242, 93, 15);
+					Line(242, 93, 294, 93, 15);
 				}
 				break;
 
@@ -229,36 +211,36 @@ void draw_maze(char* screen)
 				// If not, draw wall
 				if(maze[block.x][block.y])
 				{
-					linedraw(135, 44, 135, 93, 15, screen);
-					linedraw(242, 44, 242, 93, 15, screen);
-					linedraw(135, 44, 242, 44, 15, screen);
-					linedraw(135, 93, 242, 93, 15, screen);
+					Line(135, 44, 135, 93, 15);
+					Line(242, 44, 242, 93, 15);
+					Line(135, 44, 242, 44, 15);
+					Line(135, 93, 242, 93, 15);
 				}
 				else	// Else draw sides of the next square
 				{
 					if (maze[lblock.x][lblock.y])
 					{
-						linedraw(135, 44, 162, 57, 15, screen);
-						linedraw(162, 57, 162, 80, 15, screen);
-						linedraw(162, 80, 135, 93, 15, screen);
+						Line(135, 44, 162, 57, 15);
+						Line(162, 57, 162, 80, 15);
+						Line(162, 80, 135, 93, 15);
 					}
 					else
 					{
-						linedraw(135, 57, 162, 57, 15, screen);
-						linedraw(162, 57, 162, 80, 15, screen);
-						linedraw(162, 80, 135, 80, 15, screen);
+						Line(135, 57, 162, 57, 15);
+						Line(162, 57, 162, 80, 15);
+						Line(162, 80, 135, 80, 15);
 					}
 					if (maze[rblock.x][rblock.y])
 					{
-						linedraw(242, 44, 215, 57, 15, screen);
-						linedraw(215, 57, 215, 80, 15, screen);
-						linedraw(215, 80, 242, 93, 15, screen);
+						Line(242, 44, 215, 57, 15);
+						Line(215, 57, 215, 80, 15);
+						Line(215, 80, 242, 93, 15);
 					}
 					else
 					{
-						linedraw(242, 57, 215, 57, 15, screen);
-						linedraw(215, 57, 215, 80, 15, screen);
-						linedraw(215, 80, 242, 80, 15, screen);
+						Line(242, 57, 215, 57, 15);
+						Line(215, 57, 215, 80, 15);
+						Line(215, 80, 242, 80, 15);
 					}
 				}
 				break;
@@ -266,36 +248,36 @@ void draw_maze(char* screen)
 			case 2:		// Do it again
 				if (maze[block.x][block.y])
 				{
-					linedraw(162, 57, 162, 80, 15, screen);
-					linedraw(215, 57, 215, 80, 15, screen);
-					linedraw(162, 57, 215, 57, 15, screen);
-					linedraw(162, 80, 215, 80, 15, screen);
+					Line(162, 57, 162, 80, 15);
+					Line(215, 57, 215, 80, 15);
+					Line(162, 57, 215, 57, 15);
+					Line(162, 80, 215, 80, 15);
 				}
 				else
 				{
 					if (maze[lblock.x][lblock.y])
 					{
-						linedraw(162, 57, 175, 63, 15, screen);
-						linedraw(175, 63, 175, 74, 15, screen);
-						linedraw(175, 74, 162, 80, 15, screen);
+						Line(162, 57, 175, 63, 15);
+						Line(175, 63, 175, 74, 15);
+						Line(175, 74, 162, 80, 15);
 					}
 					else
 					{
-						linedraw(162, 63, 175, 63, 15, screen);
-						linedraw(175, 63, 175, 74, 15, screen);
-						linedraw(175, 74, 162, 74, 15, screen);
+						Line(162, 63, 175, 63, 15);
+						Line(175, 63, 175, 74, 15);
+						Line(175, 74, 162, 74, 15);
 					}
 					if (maze[rblock.x][rblock.y])
 					{
-						linedraw(215, 57, 202, 63, 15, screen);
-						linedraw(202, 63, 202, 74, 15, screen);
-						linedraw(202, 74, 215, 80, 15, screen);
+						Line(215, 57, 202, 63, 15);
+						Line(202, 63, 202, 74, 15);
+						Line(202, 74, 215, 80, 15);
 					}
 					else
 					{
-						linedraw(215, 63, 202, 63, 15, screen);
-						linedraw(202, 63, 202, 74, 15, screen);
-						linedraw(202, 74, 215, 74, 15, screen);
+						Line(215, 63, 202, 63, 15);
+						Line(202, 63, 202, 74, 15);
+						Line(202, 74, 215, 74, 15);
 					}
 				}
 				break;
@@ -303,36 +285,36 @@ void draw_maze(char* screen)
 			case 3:		// And again
 				if (maze[block.x][block.y])
 				{
-					linedraw(175, 63, 175, 74, 15, screen);
-					linedraw(202, 63, 202, 74, 15, screen);
-					linedraw(175, 63, 202, 63, 15, screen);
-					linedraw(175, 74, 202, 74, 15, screen);
+					Line(175, 63, 175, 74, 15);
+					Line(202, 63, 202, 74, 15);
+					Line(175, 63, 202, 63, 15);
+					Line(175, 74, 202, 74, 15);
 				}
 				else
 				{
 					if (maze[lblock.x][lblock.y])
 					{
-						linedraw(175, 63, 182, 66, 15, screen);
-						linedraw(182, 66, 182, 70, 15, screen);
-						linedraw(182, 70, 175, 74, 15, screen);
+						Line(175, 63, 182, 66, 15);
+						Line(182, 66, 182, 70, 15);
+						Line(182, 70, 175, 74, 15);
 					}
 					else
 					{
-						linedraw(175, 66, 182, 66, 15, screen);
-						linedraw(182, 66, 182, 70, 15, screen);
-						linedraw(182, 70, 175, 70, 15, screen);
+						Line(175, 66, 182, 66, 15);
+						Line(182, 66, 182, 70, 15);
+						Line(182, 70, 175, 70, 15);
 					}
 					if (maze[rblock.x][rblock.y])
 					{
-						linedraw(202, 63, 195, 66, 15, screen);
-						linedraw(195, 66, 195, 70, 15, screen);
-						linedraw(195, 70, 202, 74, 15, screen);
+						Line(202, 63, 195, 66, 15);
+						Line(195, 66, 195, 70, 15);
+						Line(195, 70, 202, 74, 15);
 					}
 					else
 					{
-						linedraw(202, 66, 195, 66, 15, screen);
-						linedraw(195, 66, 195, 70, 15, screen);
-						linedraw(195, 70, 202, 70, 15, screen);
+						Line(202, 66, 195, 66, 15);
+						Line(195, 66, 195, 70, 15);
+						Line(195, 70, 202, 70, 15);
 					}
 				}
 				break;
@@ -343,10 +325,10 @@ void draw_maze(char* screen)
 	}
 }
 
-void draw_box(char* screen)
+void draw_box()
 {
-	linedraw(82, 19, 294, 19, 15, screen);
-	linedraw(294, 19, 294, 119, 15, screen);
-	linedraw(294, 119, 82, 119, 15, screen);
-	linedraw(82, 119, 82, 19, 15, screen);
+	Line(82, 19, 294, 19, 15);
+	Line(294, 19, 294, 119, 15);
+	Line(294, 119, 82, 119, 15);
+	Line(82, 119, 82, 19, 15);
 }

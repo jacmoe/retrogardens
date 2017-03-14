@@ -35,3 +35,6 @@
 
 # Backup files
 *.BAK
+
+# temp backup dir
+BC31/OLDCOMMON
