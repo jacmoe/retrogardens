@@ -43,6 +43,8 @@ int worldMap[mapWidth][mapHeight]=
   {1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1}
 };
 
+word* game_clock = (word*)0x0000046C; // points to 18.2hz system clock
+
 void main()
 {
 	// Put display in mode 13h
@@ -56,6 +58,9 @@ void main()
 		printf("Not enough memory for double buffer.\n");
 		exit(1);
 	}
+
+	double time = 0;
+	double oldTime = 0;
 
 	Keyboard kb;
 
@@ -164,9 +169,62 @@ void main()
 			// draw the pixels of the stripe as a vertical line
 			vert_line_buf(x, drawStart, drawEnd, worldMap[mapX][mapY], double_buffer);
 		}
+		oldTime = time;
+		time = *game_clock;
+		double frameTime = (time - oldTime) / 18.2;
+
 		// show the buffer
 		show_buffer(double_buffer);
 
+		double moveSpeed = frameTime * 5.0;
+		double rotSpeed = frameTime * 3.0;
+
+		// move forwards if no wall in front of you
+		if(kb.isKeyDown(uparrow))
+		{
+			if(worldMap[int(posX + dirX * moveSpeed)][int(posY)] == 0)
+			{
+				posX += dirX * moveSpeed;
+			}
+			if(worldMap[int(posX)][int(posY + dirY * moveSpeed)] == 0)
+			{
+				posY += dirY * moveSpeed;
+			}
+		}
+		// move backwards if no wall in front of you
+		if(kb.isKeyDown(dnarrow))
+		{
+			if(worldMap[int(posX - dirX * moveSpeed)][int(posY)] == 0)
+			{
+				posX -= dirX * moveSpeed;
+			}
+			if(worldMap[int(posX)][int(posY - dirY * moveSpeed)] == 0)
+			{
+				posY -= dirY * moveSpeed;
+			}
+		}
+		// rotate to the right
+		if(kb.isKeyDown(rtarrow))
+		{
+			// both camera direction and camera plane must be rotated
+			double oldDirX = dirX;
+			dirX = dirX * cos(-rotSpeed) - dirY * sin(-rotSpeed);
+			dirY = oldDirX * sin(-rotSpeed) + dirY * cos(-rotSpeed);
+			double oldPlaneX = planeX;
+			planeX = planeX * cos(-rotSpeed) - planeY * sin(-rotSpeed);
+			planeY = oldPlaneX * sin(-rotSpeed) + planeY * cos(-rotSpeed);
+		}
+		// rotate to the left
+		if(kb.isKeyDown(lfarrow))
+		{
+			// both camera direction and camera plane must be rotated
+			double oldDirX = dirX;
+			dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
+			dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
+			double oldPlaneX = planeX;
+			planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
+			planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
+		}
 	} // while not escape key pressed
 
 	// free resources
