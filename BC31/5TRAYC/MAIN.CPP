@@ -6,49 +6,72 @@
 #include <math.h>
 #include "screen.h"
 #include "jmkbd.h"
+#include "pcx.h"
 
+#define texWidth 64
+#define texHeight 64
 #define mapWidth 24
 #define mapHeight 24
 
+
 int worldMap[mapWidth][mapHeight]=
 {
-  {1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  {4,4,4,4,  4,4,4,4,  4,4,4,4,  4,4,4,4,  7,7,7,7,  7,7,7,7},
+  {4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  7,0,0,0,  0,0,0,7},
+  {4,0,1,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,7},
+  {4,0,2,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,7},
 
-  {1,0,0,0,  0,0,2,2,  2,2,2,0,  0,0,0,3,  0,3,0,3,  0,0,0,1},
-  {1,0,0,0,  0,0,2,0,  0,0,2,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,2,0,  0,0,2,0,  0,0,0,3,  0,0,0,3,  0,0,0,1},
-  {1,0,0,0,  0,0,2,0,  0,0,2,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  {4,0,3,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  7,0,0,0,  0,0,0,7},
+  {4,0,4,0,  0,0,0,5,  5,5,5,5,  5,5,5,5,  7,7,0,7,  7,7,7,7},
+  {4,0,5,0,  0,0,0,5,  0,5,0,5,  0,5,0,5,  7,0,0,0,  7,7,7,1},
+  {4,0,6,0,  0,0,0,5,  0,0,0,0,  0,0,0,5,  7,0,0,0,  0,0,0,8},
 
-  {1,0,0,0,  0,0,2,2,  0,2,2,0,  0,0,0,3,  0,3,0,3,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  {4,0,7,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  7,7,7,1},
+  {4,0,8,0,  0,0,0,5,  0,0,0,0,  0,0,0,5,  7,0,0,0,  0,0,0,8},
+  {4,0,0,0,  0,0,0,5,  0,0,0,0,  0,0,0,5,  7,0,0,0,  7,7,7,1},
+  {4,0,0,0,  0,0,0,5,  5,5,5,0,  5,5,5,5,  7,7,7,7,  7,7,7,1},
 
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  {6,6,6,6,  6,6,6,6,  6,6,6,0,  6,6,6,6,  6,6,6,6,  6,6,6,6},
+  {8,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,4},
+  {6,6,6,6,  6,6,0,6,  6,6,6,0,  6,6,6,6,  6,6,6,6,  6,6,6,6},
+  {4,4,4,4,  4,4,0,4,  4,4,6,0,  6,2,2,2,  2,2,2,2,  3,3,3,3},
 
-  {1,4,4,4,  4,4,4,4,  4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,4,0,4,  0,0,0,0,  4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,4,0,0,  0,0,5,0,  4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,4,0,4,  0,0,0,0,  4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  {4,0,0,0,  0,0,0,0,  0,4,6,0,  6,2,0,0,  0,0,0,2,  0,0,0,2},
+  {4,0,0,0,  0,0,0,0,  0,0,0,0,  6,2,0,0,  5,0,0,2,  0,0,0,2},
+  {4,0,0,0,  0,0,0,0,  0,4,6,0,  6,2,0,0,  0,0,0,2,  2,0,2,2},
+  {4,0,6,0,  6,0,0,0,  0,4,6,0,  0,0,0,0,  5,0,0,0,  0,0,0,2},
 
-  {1,4,0,4,  4,4,4,4,  4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,4,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,4,4,4,  4,4,4,4,  4,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1}
+  {4,0,0,5,  0,0,0,0,  0,4,6,0,  6,2,0,0,  0,0,0,2,  2,0,2,2},
+  {4,0,6,0,  6,0,0,0,  0,4,6,0,  6,2,0,0,  5,0,0,2,  0,0,0,2},
+  {4,0,0,0,  0,0,0,0,  0,4,6,0,  6,2,0,0,  0,0,0,2,  0,0,0,2},
+  {4,4,4,4,  4,4,4,4,  4,4,1,1,  1,2,2,2,  2,2,2,3,  3,3,3,3}
 };
 
 word* game_clock = (word*)0x0000046C; // points to 18.2hz system clock
 
+PcxImage bitmaps[8];
+
 void main()
 {
+	// load the bitmaps
+	PcxLoadImage("TEX\\STONE1.PCX", &bitmaps[0]);
+	PcxLoadImage("TEX\\STONE3.PCX", &bitmaps[1]);
+	PcxLoadImage("TEX\\BLUE.PCX", &bitmaps[2]);
+	PcxLoadImage("TEX\\PURPLE.PCX", &bitmaps[3]);
+	PcxLoadImage("TEX\\MOSSY.PCX", &bitmaps[4]);
+	PcxLoadImage("TEX\\EAGLE.PCX", &bitmaps[5]);
+	PcxLoadImage("TEX\\BRICK.PCX", &bitmaps[6]);
+	PcxLoadImage("TEX\\WOOD.PCX", &bitmaps[7]);
+	///*
+	for(int p = 0; p < 8; p++)
+	{
+		TransposeBitmap(bitmaps[p].bitmap, bitmaps[p].width, bitmaps[p].height);
+	}//*/
+
 	// Put display in mode 13h
 	set_mode(VGA_256_COLOR_MODE);
+
+	set_palette(bitmaps[0].pal);
 
 	// Double buffer
 	byte* double_buffer;
@@ -67,15 +90,15 @@ void main()
 
 	Keyboard kb;
 
-	double posX = 22, posY = 12; // x and y starting positions
-	double dirX = -1, dirY = 0; // initial direction vector
-	double planeX = 0, planeY = 0.66; // 2d raycaster version of camera plane
+	double posX = 22.0, posY = 11.5; // x and y starting positions
+	double dirX = -1.0, dirY = 0.0; // initial direction vector
+	double planeX = 0.0, planeY = 0.66; // 2d raycaster version of camera plane
 
 	// Wait for the user to hit escape key
 	while(!kb.wasPressed(esckey))
 	{
 		// clear double buffer
-		memset(double_buffer, 0, SCREEN_SIZE);
+		memset(double_buffer, 8, SCREEN_SIZE);
 
 		for(int x = 0; x < SCREEN_WIDTH; x++)
 		{
@@ -165,11 +188,38 @@ void main()
 			int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
 			if(drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
 
-			byte color = worldMap[mapX][mapY];
-			if(side == 0) color = (color << 1) & 835711;
+			// texturing calculations
+			int texNum = worldMap[mapX][mapY] - 1; // 1 subtracted so that texture 0 can be used
 
-			// draw the pixels of the stripe as a vertical line
-			vert_line_buf(x, drawStart, drawEnd, color, double_buffer);
+			// calculate value of wallX
+			double wallX; // where the wall was hit
+			if (side == 0)
+			{
+				wallX = rayPosY + perpWallDist * rayDirY;
+			}
+			else
+			{
+				wallX = rayPosX + perpWallDist * rayDirX;
+			}
+			wallX -= floor((wallX));
+
+			// x coordinate on the texture
+			int texX = int(wallX * double(texWidth));
+			if(side == 0 && rayDirX > 0) texX = texWidth - texX - 1;
+			if(side == 1 && rayDirY < 0) texX = texWidth - texX - 1;
+
+			for(int y = drawStart; y < drawEnd; y++)
+			{
+				int d = y * 256 - SCREEN_HEIGHT * 128 + lineHeight * 128; // 256 and 128 factors to avoid floats
+				int texY = ((d * texHeight) / lineHeight) / 256;
+				byte color = bitmaps[texNum].bitmap[texHeight * texY + texX];
+				// make color darker for y-sides: R, G and B byte each divided through with a shift and an and
+				if(side == 1) color = (color >> 1) & 8355711;
+
+				double_buffer[(y << 8) + (y << 6) + x] = color;
+				//double_buffer[x + (y << 8) + (y << 6)] = color;
+				//plot_pixel_buf(x, y, color, double_buffer);
+			}
 		}
 		oldTime = time;
 		time = *game_clock;
@@ -230,6 +280,12 @@ void main()
 	} // while not escape key pressed
 
 	// free resources
+	/*
+	for(int res = 0; res < 8; res++)
+	{
+		free(bitmaps[res].data);
+	}
+	*/
 	free(double_buffer);
 
 	// enter text mode
