@@ -51,17 +51,27 @@ word* game_clock = (word*)0x0000046C; // points to 18.2hz system clock
 
 PcxImage bitmaps[8];
 
+typedef struct
+{
+	unsigned char r, g, b;
+} RGB_t;
+
+typedef RGB_t DPalette[256];
+
+void set_dpalette(DPalette d);
+void read_dpalette(char* filename, DPalette d);
+
 void main()
 {
 	// load the bitmaps
-	PcxLoadImage("TEX\\STONE1.PCX", &bitmaps[0]);
-	PcxLoadImage("TEX\\STONE3.PCX", &bitmaps[1]);
-	PcxLoadImage("TEX\\BLUE.PCX", &bitmaps[2]);
-	PcxLoadImage("TEX\\PURPLE.PCX", &bitmaps[3]);
-	PcxLoadImage("TEX\\MOSSY.PCX", &bitmaps[4]);
-	PcxLoadImage("TEX\\EAGLE.PCX", &bitmaps[5]);
-	PcxLoadImage("TEX\\BRICK.PCX", &bitmaps[6]);
-	PcxLoadImage("TEX\\WOOD.PCX", &bitmaps[7]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[0]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[1]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[2]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[3]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[4]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[5]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[6]);
+	PcxLoadImage("TEX\\A0.PCX", &bitmaps[7]);
 	///*
 	for(int p = 0; p < 8; p++)
 	{
@@ -71,7 +81,9 @@ void main()
 	// Put display in mode 13h
 	set_mode(VGA_256_COLOR_MODE);
 
-	set_palette(bitmaps[0].pal);
+	DPalette pal;
+	read_dpalette("A.PAL", pal);
+	set_dpalette(pal);
 
 	// Double buffer
 	byte* double_buffer;
@@ -212,12 +224,12 @@ void main()
 			{
 				int d = y * 256 - SCREEN_HEIGHT * 128 + lineHeight * 128; // 256 and 128 factors to avoid floats
 				int texY = ((d * texHeight) / lineHeight) / 256;
-				byte color = bitmaps[texNum].bitmap[texHeight * texY + texX];
+				byte color = bitmaps[texNum].bitmap[texHeight * texX + texY];
 				// make color darker for y-sides: R, G and B byte each divided through with a shift and an and
 				if(side == 1) color = (color >> 1) & 8355711;
 
-				double_buffer[(y << 8) + (y << 6) + x] = color;
-				//double_buffer[x + (y << 8) + (y << 6)] = color;
+				//double_buffer[(y << 8) + (y << 6) + x] = color;
+				double_buffer[x + (y << 8) + (y << 6)] = color;
 				//plot_pixel_buf(x, y, color, double_buffer);
 			}
 		}
@@ -290,4 +302,27 @@ void main()
 
 	// enter text mode
 	set_mode(TEXT_MODE);
+}
+
+void read_dpalette(char* filename, DPalette d)
+{
+	FILE* f;
+
+	f = fopen(filename, "rb");
+	fread(d, sizeof(DPalette), 1, f);
+	fclose(f);
+}
+
+void set_dpalette(DPalette d)
+{
+	unsigned es;
+
+	es = _ES;
+	_ES = FP_SEG((void far*)d);
+	_DX = FP_OFF((void far*)d);
+	_AX = 0x1012;
+	_BX = 0;
+	_CX = 256;
+	geninterrupt(0x10);
+	_ES = es;
 }
