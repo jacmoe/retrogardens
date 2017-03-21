@@ -5,98 +5,111 @@
 #include <mem.h>
 #include <math.h>
 #include "screen.h"
-#include "jmkbd.h"
 #include "pcx.h"
+
 
 const WALL_HEIGHT = 64;
 const VIEWER_HEIGHT = 32;
-const VIEWER_DISTANCE = 128;
-const VIEWPORT_LEFT = 40;
-const VIEWPORT_RIGHT = 280;
-const VIEWPORT_TOP = 50;
-const VIEWPORT_BOT = 150;
-const VIEWPORT_HEIGHT = 100;
-const VIEWPORT_CENTER = 100;
+const VIEWER_DISTANCE = 192;
+const VIEWPORT_LEFT = 0;
+const VIEWPORT_RIGHT = 319;
+const VIEWPORT_TOP = 0;
+const VIEWPORT_BOT = 199;
+const VIEWPORT_HEIGHT = VIEWPORT_BOT - VIEWPORT_TOP;
+const VIEWPORT_CENTER = VIEWPORT_TOP + VIEWPORT_HEIGHT / 2;
 
+const IMAGE_HEIGHT = 64;
+const IMAGE_WIDTH = 64;
 
 typedef int map_type[16][16];
 
 map_type map =
 {
-  {1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 7, 5, 0, 5,   0, 0, 0, 2,   0, 0, 0, 0,   0, 0, 0, 5},
+  { 7, 0, 0, 0,   0, 0, 0, 0,   3, 0, 0, 0,   0, 0, 0, 5},
+  { 7, 0, 0, 0,   0, 0, 0, 0,   0, 6, 0, 0,   0, 0, 0, 5},
 
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
+  { 7, 0, 0, 0,   0, 0, 0, 0,   0, 0, 5, 4,   0, 0, 0, 5},
+  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 9, 9,   0, 0, 0, 5},
+  { 9, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 9,   8, 0, 0, 5},
+  { 9, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   8, 0, 0, 5},
 
-  {1,0,0,1,  0,0,0,1,  1,1,1,1,  1,0,0,1},
-  {1,0,0,1,  0,0,0,1,  1,0,0,1,  1,0,0,1},
-  {1,0,0,1,  0,0,0,1,  1,0,0,1,  1,0,0,1},
-  {1,0,0,1,  0,0,0,1,  1,0,0,1,  1,0,0,1},
+  { 9, 7, 7, 0,   0, 0, 0, 0,   0, 0, 0, 9,   8, 0, 0, 5},
+  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 9, 9,   0, 0, 0, 5},
+  { 8, 7, 7, 0,   0, 0, 5, 1,   0, 1, 0, 0,   0, 0, 0, 5},
+  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 5},
 
-  {1,0,0,1,  1,1,1,1,  1,0,0,1,  1,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,0,0,0,  0,0,0,0,  0,0,0,0,  0,0,0,1},
-  {1,1,1,1,  1,1,1,1,  1,1,1,1,  1,1,1,1}
+  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 0, 0, 0,   0, 0, 0, 8},
+  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 9},
+  { 7, 6, 6, 6,   6, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 8},
+  { 7, 5, 5, 5,   5, 5, 5, 8,   8, 8, 5, 5,   5, 5, 5, 5}
 };
 
-word* game_clock = (word*)0x0000046C; // points to 18.2hz system clock
-
-PcxImage bitmaps[8];
-
-typedef struct
+map_type flor =
 {
-	unsigned char r, g, b;
-} RGB_t;
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
 
-typedef RGB_t DPalette[256];
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
 
-void set_dpalette(DPalette d);
-void read_dpalette(char* filename, DPalette d);
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
 
-void draw_maze(map_type map, char far* screen, int xview, int yview,
-				float viewing_angle, float viewer_height);
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
+  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1}
+};
 
-float viewing_angle = 3;
-int viewer_height = 32;
-int xview = 8 * 64;
-int yview = 8 * 64;
+map_type ceiling =
+{
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
 
-byte* double_buffer;
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
 
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
+  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5}
+};
+void draw_maze(map_type map, map_type flor, map_type ceiling,
+				char far* screen, int xview, int yview,
+				float viewing_angle, int viewer_height,
+				char far* textmaps);
 
 void main(int argc, char* argv[])
 {
+	float viewing_angle = 0;
+	int viewer_height = 32;
+	int xview = 8 * 64;
+	int yview = 8 * 64;
+
 	// read arguments from command line if present:
 	if(argc == 2) viewing_angle = atof(argv[1]);
-
-	/*
-	// load the bitmaps
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[0]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[1]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[2]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[3]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[4]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[5]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[6]);
-	PcxLoadImage("TEX\\A0.PCX", &bitmaps[7]);
-	//*/
-	/*
-	for(int p = 0; p < 8; p++)
-	{
-		TransposeBitmap(bitmaps[p].bitmap, bitmaps[p].width, bitmaps[p].height);
-	}//*/
 
 	// Put display in mode 13h
 	set_mode(VGA_256_COLOR_MODE);
 
-	//DPalette pal;
-	//read_dpalette("A.PAL", pal);
-	//set_dpalette(pal);
+	byte* double_buffer;
 
 	if((double_buffer = (byte*) malloc(SCREEN_SIZE)) == NULL)
 	{
@@ -104,53 +117,20 @@ void main(int argc, char* argv[])
 		exit(1);
 	}
 
-	double time = 0; // time of current frame
-	double oldTime = 0; // time of previous frame
+	// clear double buffer
+	memset(double_buffer, 0, SCREEN_SIZE);
 
-	double rotateFactor = 3.0;
-	double moveFactor = 10.0;
+	PcxImage pcx;
+	if(PcxLoadImage("images.pcx", &pcx) != PCX_OK) exit(1);
+	set_palette(pcx.pal);
 
-	Keyboard kb;
+	draw_maze(map, flor, ceiling, double_buffer, xview, yview, viewing_angle,
+				viewer_height, pcx.bitmap);
 
-	double posX = 22.0, posY = 11.5; // x and y starting positions
-	double dirX = -1.0, dirY = 0.0; // initial direction vector
-	double planeX = 0.0, planeY = 0.66; // 2d raycaster version of camera plane
+	// show the buffer
+	show_buffer(double_buffer);
 
-	// Wait for the user to hit escape key
-	while(!kb.wasPressed(esckey))
-	{
-		// clear double buffer
-		memset(double_buffer, 8, SCREEN_SIZE);
-
-		draw_maze(map, double_buffer, xview, yview, viewing_angle, viewer_height);
-
-		oldTime = time;
-		time = *game_clock;
-		double frameTime = (time - oldTime) / 18.2;
-
-		// show the buffer
-		show_buffer(double_buffer);
-
-		double moveSpeed = frameTime * moveFactor;
-		double rotSpeed = frameTime * rotateFactor;
-
-		// move forwards if no wall in front of you
-		if(kb.isKeyDown(uparrow))
-		{
-		}
-		// move backwards if no wall in front of you
-		if(kb.isKeyDown(dnarrow))
-		{
-		}
-		// rotate to the right
-		if(kb.isKeyDown(rtarrow))
-		{
-		}
-		// rotate to the left
-		if(kb.isKeyDown(lfarrow))
-		{
-		}
-	} // while not escape key pressed
+	while(!kbhit());
 
 	free(double_buffer);
 
@@ -161,19 +141,21 @@ void main(int argc, char* argv[])
 // Draws a raycast image in the viewport of the maze represented in array
 // map as seen from position xview, yview by a viewer looking at an angle
 // viewer_angle, where angle 0 is due north. (Angles measured in radians)
-void draw_maze(map_type map, char far* screen, int xview, int yview,
-				float viewing_angle, float viewer_height)
+void draw_maze(map_type map, map_type flor, map_type ceiling,
+				char far* screen, int xview, int yview,
+				float viewing_angle, int viewer_height,
+				char far* textmaps)
 {
-
 	int sy, offset;				// pixel y position and offset
 	float xd, yd;				// distance to next wall in x and y
 	int grid_x, grid_y;			// coordinates of x and y grid lines
 	float xcross_x, xcross_y;	// ray intersection coordinates
 	float ycross_x, ycross_y;
-
-	int xdist, ydist;
-	int xmaze, ymaze;
-	int distance;
+	unsigned int xdist, ydist;	// distance to x and y grid lines
+	int xmaze, ymaze;			// map location of ray collision
+	int distance;				// distance to wall along ray
+	int tmcolumn;				// column in texture map
+	float yratio;
 
 	// *** The raycasting begins:
 
@@ -187,8 +169,8 @@ void draw_maze(map_type map, char far* screen, int xview, int yview,
 		float radians = viewing_angle + column_angle;
 
 		// rotate endpoint of ray to viewing angle:
-		int x2 = 1024 * (cos(radians));
-		int y2 = 1024 * (sin(radians));
+		int x2 = -1024 * (sin(radians));
+		int y2 = 1024 * (cos(radians));
 
 		// translate relative to viewer's position:
 		x2 += xview;
@@ -206,7 +188,7 @@ void draw_maze(map_type map, char far* screen, int xview, int yview,
 		if(xdiff == 0) xdiff = 1;
 
 		// get slope of ray:
-		float slope = (float)ydiff/xdiff;
+		float slope = (float)ydiff / xdiff;
 
 		// cheat (again) to avoid divide-by-zero error:
 		if(slope == 0.0) slope = 0.0001;
@@ -249,11 +231,14 @@ void draw_maze(map_type map, char far* screen, int xview, int yview,
 			{
 				// calculate maze grid coordinates of square:
 				xmaze = xcross_x / 64;
-				ymaze = ycross_y / 64;
+				ymaze = xcross_y / 64;
 
 				// set x and y to point of ray intersection:
 				x = xcross_x;
 				y = xcross_y;
+
+				// find relevant column of texture map:
+				tmcolumn = (int)y &0x3f;
 
 				// is there a maze cube here? If so, stop looping:
 				if(map[xmaze][ymaze]) break;
@@ -267,6 +252,9 @@ void draw_maze(map_type map, char far* screen, int xview, int yview,
 				// set x and y to piont of ray intersection:
 				x = ycross_x;
 				y = ycross_y;
+
+				// find relevant column of texture map:
+				tmcolumn = (int)x &0x3f;
 
 				// is there a maze cube here? If so, stop looping:
 				if(map[xmaze][ymaze]) break;
@@ -286,62 +274,145 @@ void draw_maze(map_type map, char far* screen, int xview, int yview,
 		int height = VIEWER_DISTANCE * WALL_HEIGHT / distance;
 
 		// calculate bottom of wall on screen:
-		int bot = VIEWER_DISTANCE * VIEWER_HEIGHT / distance + VIEWPORT_CENTER;
+		int bot = VIEWER_DISTANCE * viewer_height / distance + VIEWPORT_CENTER;
 
 		// calculate top of wall on screen:
 		int top = bot - height;
 
-		// clip wall to viewport
+		// initialize temporary offset into texture map:
+		int t = tmcolumn;
+
+		// if top of current vertical line is outside of viewport, clip it:
+		int dheight = height;
+		int iheight = IMAGE_HEIGHT;
+		yratio = (float)WALL_HEIGHT / height;
 		if(top < VIEWPORT_TOP)
 		{
-			height -= (VIEWPORT_TOP - top);
+			dheight -= (VIEWPORT_TOP - top);
+			t += (int)((VIEWPORT_TOP - top) * yratio) * 320;
+			iheight -= ((VIEWPORT_TOP - top) * yratio);
 			top = VIEWPORT_TOP;
 		}
-		if((top + height) > VIEWPORT_BOT)
+		if(bot > VIEWPORT_BOT)
 		{
-			height -= (bot - VIEWPORT_BOT);
+			dheight -= (bot - VIEWPORT_BOT);
+			iheight -= (bot - VIEWPORT_BOT) * yratio;
+			bot = VIEWPORT_BOT;
 		}
 
 		// *** Draw the wall column:
 
-		// find video offset of top pixel in wall column:
+		// point to video memory offset for top of line:
 		offset = top * 320 + column;
 
-		// loop through all pixels in wall column:
-		for(int i = 0; i < height; i++)
-		{
-			// set wall pixels to white:
-			screen[offset] = 15;
+		// initialize vertical error term for texture map:
+		int tyerror = 64;
 
-			// advance to next vertical pixel:
-			offset += 320;
+		// which graphics tile are we using?
+		int tile = map[xmaze][ymaze] - 1;
+
+		// find offset of tile and column in bitmap:
+		unsigned int tileptr = (tile/4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+
+		// loop through all pixels in the current vertical line,
+		// advancing offset to the next row of pixels after each pixel is drawn
+		for(int h = 0; h < iheight; h++)
+		{
+			// are we ready to draw a pixel?
+			while(tyerror >= IMAGE_HEIGHT)
+			{
+				// if so, draw it:
+				screen[offset] = textmaps[tileptr];
+
+				// reset error term:
+				tyerror -= IMAGE_HEIGHT;
+
+				// and advance offset to next screen line:
+				offset += 320;
+			}
+			// incremental division:
+			tyerror += height;
+
+			// advance tileptr to next line of bitmap:
+			tileptr += 320;
+		}
+
+		// step through floor pixels
+		for(int row = bot + 1; row <= VIEWPORT_BOT; row++)
+		{
+			// get ratio of viewer's height to pixel height:
+			float ratio = (float)viewer_height / (row - 100);
+
+			// get distance to visible pixel:
+			distance = ratio * VIEWER_DISTANCE / cos(column_angle);
+
+			// rotate distance to ray angle:
+			int x = - distance * (sin(radians));
+			int y = distance * (cos(radians));
+
+			// translate relative to viewer coordinates:
+			x += xview;
+			y += yview;
+
+			// get maze square intersected by ray:
+			int xmaze = x / 64;
+			int ymaze = y / 64;
+
+			// find relevant column of texture map:
+			int t = ((int)y & 0x3f) * 320 + ((int)x & 0x3f);
+
+			// which graphics tile are we using?
+			int tile = flor[xmaze][ymaze] - 1;
+
+			// find offset of tile and column in bitmap:
+			unsigned int tileptr = (tile / 4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+
+			// calculate video offset of floor pixel:
+			offset = row * 320 + column;
+
+			// draw pixel:
+			screen[offset] = textmaps[tileptr];
+		}
+
+		// step through ceiling pixels
+		for(row = top - 1; row >= VIEWPORT_TOP; --row)
+		{
+			// get ratio of viewer's height to pixel height:
+			float ratio = (float)(WALL_HEIGHT - viewer_height) / (100 - row);
+
+			// get distance to visible pixel:
+			distance = ratio * VIEWER_DISTANCE / cos(column_angle);
+
+			// rotate distance to ray angle:
+			int x = - distance * (sin(radians));
+			int y = distance * (cos(radians));
+
+			// translate relative to viewer coordinates:
+			x += xview;
+			y += yview;
+
+			// get maze square intersected by ray:
+			int xmaze = x / 64;
+			int ymaze = y / 64;
+
+			// find relevant column of texture map:
+			int t = ((int)y & 0x3f) * 320 + ((int)x & 0x3f);
+
+			// which graphics tile are we using?
+			int tile = ceiling[xmaze][ymaze] - 1;
+
+			// find offset of tile and column in bitmap:
+			unsigned int tileptr = (tile / 4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+
+			// calculate video offset of floor pixel:
+			offset = row * 320 + column;
+
+			// draw pixel:
+			screen[offset] = textmaps[tileptr];
+
 		}
 
 	} // for each column in viewport
 
 }
 
-
-
-void read_dpalette(char* filename, DPalette d)
-{
-	FILE* f;
-
-	f = fopen(filename, "rb");
-	fread(d, sizeof(DPalette), 1, f);
-	fclose(f);
-}
-
-void set_dpalette(DPalette d)
-{
-	unsigned es;
-
-	es = _ES;
-	_ES = FP_SEG((void far*)d);
-	_DX = FP_OFF((void far*)d);
-	_AX = 0x1012;
-	_BX = 0;
-	_CX = 256;
-	geninterrupt(0x10);
-	_ES = es;
-}
