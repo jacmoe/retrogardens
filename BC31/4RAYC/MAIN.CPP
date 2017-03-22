@@ -46,10 +46,10 @@ map_type map =
 void draw_maze(map_type map, char far* screen, int xview, int yview, float viewing_angle);
 
 
-float viewing_angle = 0;
+float viewing_angle = 62;
 int viewer_height = 32;
 int xview = 8 * 64;
-int yview = 12 * 64;
+int yview = 8 * 64;
 
 
 void main(int argc, char* argv[])
@@ -131,7 +131,7 @@ void draw_maze(map_type map, char far* screen, int xview, int yview, float viewi
 		if(xdiff == 0) xdiff = 1;
 
 		// get slope of ray:
-		float slope = (float)ydiff/xdiff;
+		float slope = (float)ydiff / xdiff;
 
 		// cheat (again) to avoid divide-by-zero error:
 		if(slope == 0.0) slope = 0.0001;
@@ -153,7 +153,7 @@ void draw_maze(map_type map, char far* screen, int xview, int yview, float viewi
 			// if ray direction negative in y, get last y grid line:
 			else grid_y = ((int)y & 0xffc0) - 1;
 
-			// get y,y coordinates where ray crosses x grid line:
+			// get x,y coordinates where ray crosses x grid line:
 			xcross_x = grid_x;
 			xcross_y = y + slope * (grid_x - x);
 
@@ -176,7 +176,7 @@ void draw_maze(map_type map, char far* screen, int xview, int yview, float viewi
 			{
 				// calculate maze grid coordinates of square:
 				xmaze = xcross_x / 64;
-				ymaze = ycross_y / 64;
+				ymaze = xcross_y / 64;
 
 				// set x and y to point of ray intersection:
 				x = xcross_x;

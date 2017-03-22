@@ -38,3 +38,6 @@
 
 # temp backup dir
 BC31/OLDCOMMON
+
+# Dat files
+*.DAT
