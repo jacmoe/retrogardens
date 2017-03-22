@@ -9,7 +9,6 @@
 
 
 const WALL_HEIGHT = 64;
-const VIEWER_HEIGHT = 32;
 const VIEWER_DISTANCE = 192;
 const VIEWPORT_LEFT = 0;
 const VIEWPORT_RIGHT = 319;
@@ -31,17 +30,17 @@ map_type map =
   { 7, 0, 0, 0,   0, 0, 0, 0,   0, 6, 0, 0,   0, 0, 0, 5},
 
   { 7, 0, 0, 0,   0, 0, 0, 0,   0, 0, 5, 4,   0, 0, 0, 5},
-  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 9, 9,   0, 0, 0, 5},
-  { 9, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 9,   8, 0, 0, 5},
-  { 9, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   8, 0, 0, 5},
+  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 6, 6,   0, 0, 0, 5},
+  { 6, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 6,   8, 0, 0, 5},
+  { 6, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   8, 0, 0, 5},
 
-  { 9, 7, 7, 0,   0, 0, 0, 0,   0, 0, 0, 9,   8, 0, 0, 5},
-  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 9, 9,   0, 0, 0, 5},
+  { 6,10, 8, 0,   0, 0, 0, 0,   8, 0, 0, 6,   8, 0, 0, 5},
+  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 6, 6,   0, 0, 0, 5},
   { 8, 7, 7, 0,   0, 0, 5, 1,   0, 1, 0, 0,   0, 0, 0, 5},
-  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 5},
+  { 6, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 5},
 
   { 7, 0, 0, 0,   0, 0, 0, 1,   0, 0, 0, 0,   0, 0, 0, 8},
-  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 9},
+  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 6},
   { 7, 6, 6, 6,   6, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 8},
   { 7, 5, 5, 5,   5, 5, 5, 8,   8, 8, 5, 5,   5, 5, 5, 5}
 };
@@ -98,7 +97,7 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 
 void main(int argc, char* argv[])
 {
-	float viewing_angle = 0;
+	float viewing_angle = 3;
 	int viewer_height = 32;
 	int xview = 8 * 64;
 	int yview = 8 * 64;
@@ -117,12 +116,14 @@ void main(int argc, char* argv[])
 		exit(1);
 	}
 
+	PcxImage pcx;
+	//if(PcxLoadImage("tex\\aztec1.pcx", &pcx) != PCX_OK) exit(1);
+	if(PcxLoadImage("images.pcx", &pcx) != PCX_OK) exit(1);
+	set_palette(pcx.pal);
+
 	// clear double buffer
 	memset(double_buffer, 0, SCREEN_SIZE);
 
-	PcxImage pcx;
-	if(PcxLoadImage("images.pcx", &pcx) != PCX_OK) exit(1);
-	set_palette(pcx.pal);
 
 	draw_maze(map, flor, ceiling, double_buffer, xview, yview, viewing_angle,
 				viewer_height, pcx.bitmap);
@@ -289,7 +290,7 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 		if(top < VIEWPORT_TOP)
 		{
 			dheight -= (VIEWPORT_TOP - top);
-			t += (int)((VIEWPORT_TOP - top) * yratio) * 320;
+			t += (int)((VIEWPORT_TOP - top) * yratio) * 256;// 320?
 			iheight -= ((VIEWPORT_TOP - top) * yratio);
 			top = VIEWPORT_TOP;
 		}
@@ -312,7 +313,7 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 		int tile = map[xmaze][ymaze] - 1;
 
 		// find offset of tile and column in bitmap:
-		unsigned int tileptr = (tile/4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+		unsigned int tileptr = (tile / 4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
 
 		// loop through all pixels in the current vertical line,
 		// advancing offset to the next row of pixels after each pixel is drawn
@@ -334,9 +335,9 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 			tyerror += height;
 
 			// advance tileptr to next line of bitmap:
-			tileptr += 320;
+			tileptr += 256;// 320?
 		}
-
+		///*
 		// step through floor pixels
 		for(int row = bot + 1; row <= VIEWPORT_BOT; row++)
 		{
@@ -359,13 +360,13 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 			int ymaze = y / 64;
 
 			// find relevant column of texture map:
-			int t = ((int)y & 0x3f) * 320 + ((int)x & 0x3f);
+			int t = ((int)y & 0x3f) * 256 + ((int)x & 0x3f);
 
 			// which graphics tile are we using?
 			int tile = flor[xmaze][ymaze] - 1;
 
 			// find offset of tile and column in bitmap:
-			unsigned int tileptr = (tile / 4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+			unsigned int tileptr = (tile/4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
 
 			// calculate video offset of floor pixel:
 			offset = row * 320 + column;
@@ -373,7 +374,8 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 			// draw pixel:
 			screen[offset] = textmaps[tileptr];
 		}
-
+		//*/
+		///*
 		// step through ceiling pixels
 		for(row = top - 1; row >= VIEWPORT_TOP; --row)
 		{
@@ -396,22 +398,22 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 			int ymaze = y / 64;
 
 			// find relevant column of texture map:
-			int t = ((int)y & 0x3f) * 320 + ((int)x & 0x3f);
+			int t = ((int)y & 0x3f) * 256 + ((int)x & 0x3f);
 
 			// which graphics tile are we using?
 			int tile = ceiling[xmaze][ymaze] - 1;
 
 			// find offset of tile and column in bitmap:
-			unsigned int tileptr = (tile / 4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+			unsigned int tileptr = (tile/4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
 
-			// calculate video offset of floor pixel:
+			// calculate video offset of ceiling pixel:
 			offset = row * 320 + column;
 
 			// draw pixel:
 			screen[offset] = textmaps[tileptr];
 
 		}
-
+		//*/
 	} // for each column in viewport
 
 }
