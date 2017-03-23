@@ -41,3 +41,7 @@ BC31/OLDCOMMON
 
 # Dat files
 *.DAT
+
+# Generated files
+TRIG.H
+TRIG.CPP
