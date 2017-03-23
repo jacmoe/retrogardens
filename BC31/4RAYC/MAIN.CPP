@@ -224,7 +224,7 @@ void draw_maze(map_type map, char far* screen, int xview, int yview, float viewi
 		int bot = VIEWER_DISTANCE * VIEWER_HEIGHT / distance + VIEWPORT_CENTER;
 
 		// calculate top of wall on screen:
-		int top = bot - height;
+		int top = bot - height + 1;
 
 		// clip wall to viewport
 		if(top < VIEWPORT_TOP)

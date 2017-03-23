@@ -278,7 +278,7 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 		int bot = VIEWER_DISTANCE * viewer_height / distance + VIEWPORT_CENTER;
 
 		// calculate top of wall on screen:
-		int top = bot - height;
+		int top = bot - height + 1;
 
 		// initialize temporary offset into texture map:
 		int t = tmcolumn;
