@@ -10,15 +10,20 @@
 #include "trig.h"
 
 
-const NUM_IMAGES = 10;
+const NUM_IMAGES = 15;
 const float MULTIPLIER = 3;
+const DISTANCE_PER_SECOND = 128;
+const ROTATION_PER_SECOND = 1024;
+//const WHICH_EVENTS =
 
-FILE* file_handle;
+FILE* file_handle;		// file handle for lightsourcing
 
 const MAXLIGHT = 32;
 const PALETTE_SIZE = 256;
 unsigned char litetable[MAXLIGHT + 1][PALETTE_SIZE];
 unsigned char* litelevel;
+unsigned char* texturelist[15];
+
 
 const WALL_HEIGHT = 64;
 const VIEWER_DISTANCE = 192;
@@ -36,126 +41,14 @@ const IMAGE_WIDTH = 64;
 
 typedef int map_type[16][16];
 
-map_type map =
-{
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 7, 5, 0, 5,   0, 0, 0, 2,   0, 0, 0, 0,   0, 0, 0, 5},
-  { 7, 0, 0, 0,   0, 0, 0, 0,   3, 0, 0, 0,   0, 0, 0, 5},
-  { 7, 0, 0, 0,   0, 0, 0, 0,   0, 6, 0, 0,   0, 0, 0, 5},
+extern map_type map, flor, ceiling, flor_lites, ceiling_lites;
 
-  { 7, 0, 0, 0,   0, 0, 0, 0,   0, 0, 5, 4,   0, 0, 0, 5},
-  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 6, 6,   0, 0, 0, 5},
-  { 6, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 6,   8, 0, 0, 5},
-  { 6, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   8, 0, 0, 5},
-
-  { 6,10, 8, 0,   0, 0, 0, 0,   8, 0, 0, 6,   8, 0, 0, 5},
-  { 8, 0, 0, 0,   0, 0, 0, 0,   0, 0, 6, 6,   0, 0, 0, 5},
-  { 8, 7, 7, 0,   0, 0, 5, 1,   0, 1, 0, 0,   0, 0, 0, 5},
-  { 6, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 5},
-
-  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 0, 0, 0,   0, 0, 0, 8},
-  { 7, 0, 0, 0,   0, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 6},
-  { 7, 6, 6, 6,   6, 0, 0, 1,   0, 1, 0, 0,   0, 0, 0, 8},
-  { 7, 5, 5, 5,   5, 5, 5, 8,   8, 8, 5, 5,   5, 5, 5, 5}
-};
-
-map_type flor =
-{
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1},
-  { 1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1}
-};
-
-map_type flor_lites =
-{
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  {32, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0,16,  16, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0,16,  16, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-
-  { 0,32, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  {32,32,32, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0,32, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-
-  { 0, 0, 0, 0,   0, 0, 0,32,  32,32, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0,32,  32,32, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0,32,  32,32, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,  32, 0, 0, 0,   0, 0, 0, 0}
-};
-
-map_type ceiling =
-{
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5},
-  { 5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5,   5, 5, 5, 5}
-};
-
-map_type ceiling_lites =
-{
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0,32,  32, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0,32,  32, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-
-  { 0,32,32, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0},
-
-  { 0, 0, 0, 0,   0, 0, 0, 0,  32,32, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,  32, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,  32, 0, 0, 0,   0, 0, 0, 0},
-  { 0, 0, 0, 0,   0, 0, 0, 0,  32, 0, 0, 0,   0, 0, 0, 0}
-};
-
-int getdistance(long degrees, int column_angle, long x, long y,
+int get_distance(long degrees, int column_angle, long x, long y,
 				int xview, int yview);
 
+unsigned char bottoms[320], tops[320];
+
 void draw_maze(map_type map, map_type flor, map_type ceiling,
-				map_type flor_lites, map_type ceiling_lites,
 				char far* screen, int xview, int yview,
 				float viewing_angle, int viewer_height,
 				int ambient_level, unsigned char far* textmaps,
@@ -164,7 +57,7 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 
 void main(int argc, char* argv[])
 {
-	float viewing_angle = 3.14;
+	float viewing_angle = 13;
 	float intensity = MAXLIGHT;
 	int ambient_level = 0;
 	int viewer_height = 32;
@@ -190,6 +83,12 @@ void main(int argc, char* argv[])
 	PcxImage pcx;
 	if(PcxLoadImage("images.pcx", &pcx) != PCX_OK) exit(1);
 	set_palette(pcx.pal);
+
+	// create texture list array:
+	for(unsigned int i = 0; i < NUM_IMAGES; i++)
+	{
+		texturelist[i] = &(pcx.bitmap[(i / 5) * 320 * 64 + i % 5 * 64]);
+	}
 
 	// loat lightsourcing tables:
 	if((file_handle = fopen("litesorc.dat", "rb")) == NULL)
@@ -217,7 +116,7 @@ void main(int argc, char* argv[])
 	memset(double_buffer, 0, SCREEN_SIZE);
 
 
-	draw_maze(map, flor, ceiling, flor_lites, ceiling_lites, double_buffer, xview, yview, viewing_angle,
+	draw_maze(map, flor, ceiling, double_buffer, xview, yview, viewing_angle,
 				viewer_height, ambient_level, pcx.bitmap, litetable, litelevel);
 
 	// show the buffer
@@ -234,14 +133,29 @@ void main(int argc, char* argv[])
 // Draws a raycast image in the viewport of the maze represented in array
 // map as seen from position xview, yview by a viewer looking at an angle
 // viewer_angle, where angle 0 is due north. (Angles measured in radians)
-int getdistance(long degrees, int column_angle, long x, long y,
+int get_distance(long degrees, int column_angle, long x, long y,
 				int xview, int yview)
 {
-	return 1;
+	long trig, fix_ny, fix_nx;
+	int distance;
+
+	int c = degrees / 512;
+
+	if(((c & 3) == 0) || ((c & 3) == 3))
+	{
+		distance = abs(fixdiv((y - ((long)yview < SHIFT)) > SHIFT,
+			COS(degrees - 1024 * c * 2)) * COS(column_angle) >> SHIFT);
+	}
+	else
+	{
+		distance = abs(fixdiv((x - ((long)xview < SHIFT)) > SHIFT,
+			SIN(degrees - 1024 * c * 2)) * COS(column_angle) >> SHIFT);
+	}
+
+	return distance;
 }
 
 void draw_maze(map_type map, map_type flor, map_type ceiling,
-				map_type flor_lites, map_type ceiling_lites,
 				char far* screen, int xview, int yview,
 				float viewing_angle, int viewer_height,
 				int ambient_level, unsigned char far* textmaps,
@@ -249,98 +163,108 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 				unsigned char* litelevel)
 {
 	int sy, offset;				// pixel y position and offset
-	float xd, yd;				// distance to next wall in x and y
+	long fix_xd, fix_yd;		// distance to next wall in x and y
 	int grid_x, grid_y;			// coordinates of x and y grid lines
-	float xcross_x, xcross_y;	// ray intersection coordinates
-	float ycross_x, ycross_y;
+	long fix_xcross_x, fix_xcross_y;	// ray intersection coordinates
+	long fix_ycross_x, fix_ycross_y;
 	unsigned int xdist, ydist;	// distance to x and y grid lines
 	int xmaze, ymaze;			// map location of ray collision
 	int distance;				// distance to wall along ray
 	int tmcolumn;				// column in texture map
-	float yratio;
+	int top, bot;
+	long fix_yratio;
 
 	// *** The raycasting begins:
 
 	// loop through all columns of pixels in viewport:
-	for(int column = VIEWPORT_LEFT; column < VIEWPORT_RIGHT; column++)
+	for(int column = VIEWPORT_LEFT; column <= VIEWPORT_RIGHT; column++)
 	{
 		// calculate horizontal angle of ray relative to center ray:
-		float column_angle = atan((float)(column - 160) / VIEWER_DISTANCE);
+		float column_angle = atan((float)(column - 160) / VIEWER_DISTANCE)
+			* (NUMBER_OF_DEGREES / 6.28);
+		if(column_angle < 0) column_angle += NUMBER_OF_DEGREES;
+		if(column_angle > NUMBER_OF_DEGREES - 1) column_angle -= NUMBER_OF_DEGREES;
 
 		// calculate angle of ray relative to maze coordinates:
-		float radians = viewing_angle + column_angle;
+		int degrees = viewing_angle + column_angle;
+		if(degrees > NUMBER_OF_DEGREES - 1) degrees -= NUMBER_OF_DEGREES;
 
 		// rotate endpoint of ray to viewing angle:
-		int x2 = -1024 * (sin(radians));
-		int y2 = 1024 * (cos(radians));
+		int x2 = fixmul(-256L << SHIFT, SIN(degrees)) >> SHIFT;
+		int y2 = fixmul(256L < SHIFT, COS(degrees)) > SHIFT;
 
 		// translate relative to viewer's position:
 		x2 += xview;
 		y2 += yview;
 
 		// initialize ray at viewer's position:
-		float x = xview;
-		float y = yview;
+		long fix_x = (long)xview << SHIFT;
+		long fix_y = (long)yview << SHIFT;
 
 		// find difference in x,y coordates along the ray:
-		int xdiff = x2 - xview;
-		int ydiff = y2 - yview;
+		long xdiff = x2 - xview;
+		long ydiff = y2 - yview;
 
 		// cheat to avoid divide-by-zero error:
 		if(xdiff == 0) xdiff = 1;
+		if(ydiff == 0) ydiff = 1;
 
 		// get slope of ray:
-		float slope = (float)ydiff / xdiff;
+		long fix_slope = fixdiv((long)ydiff << SHIFT, (long)xdiff << SHIFT);
 
-		// cheat (again) to avoid divide-by-zero error:
-		if(slope == 0.0) slope = 0.0001;
 
 		// cast ray from grid line to grid line:
 		for(;;)
 		{
 			// if ray direction positive in x, get next x grid line:
-			if(xdiff > 0) grid_x = ((int)x & 0xffc0) + 64;
+			if(xdiff > 0) grid_x = ((fix_y >> SHIFT) & 0xffc0) + 64;
 
 			// if ray direction negative in x, get last x grid line:
-			else grid_x = ((int)x & 0xffc0) - 1;
+			else grid_x = ((fix_y >> SHIFT) & 0xffc0) - 1;
 
 			// if ray direction positive in y, get next y grid line:
-			if(ydiff > 0) grid_y = ((int)y & 0xffc0) + 64;
+			if(ydiff > 0) grid_y = ((fix_y >> SHIFT) & 0xffc0) + 64;
 
 			// if ray direction negative in y, get last y grid line:
-			else grid_y = ((int)y & 0xffc0) - 1;
+			else grid_y = ((fix_y >> SHIFT) & 0xffc0) - 1;
 
 			// get y,y coordinates where ray crosses x grid line:
-			xcross_x = grid_x;
-			xcross_y = y + slope * (grid_x - x);
+			fix_xcross_x = (long)grid_x << SHIFT;
+			fix_xcross_y = fix_y + fixmul(fix_slope, ((long)grid_x << SHIFT) - fix_x);
 
 			// get x,y coordinates where ray crosses y grid line:
-			ycross_x = x + (grid_y - y) / slope;
-			ycross_y = grid_y;
+			fix_ycross_x = fix_x + fixdiv((((long)grid_y << SHIFT) - fix_y), fix_slope);
+			fix_ycross_y = (long)grid_y << SHIFT;
 
 			// get distance to x grid line:
-			xd = xcross_x - x;
-			yd = xcross_y - y;
-			xdist = sqrt(xd * xd + yd * yd);
+			fix_xd = fix_xcross_x - fix_x;
+			fix_yd = fix_xcross_y - fix_y;
+			distance = get_distance(degrees, column_angle, fix_xcross_x,
+									fix_xcross_y, xview, yview);
+			xdist = distance;
 
 			// get distance to y grid line:
-			xd = ycross_x - x;
-			yd = ycross_y - y;
-			ydist = sqrt(xd * xd + yd * yd);
+			fix_xd = fix_ycross_x - fix_x;
+			fix_yd = fix_ycross_y - fix_y;
+			long temp_f1 = fixmul(fix_xd, fix_xd);
+			long temp_f2 = fixmul(fix_yd, fix_yd);
+			distance = get_distance(degrees, column_angle, fix_ycross_x,
+									fix_ycross_y, xview, yview);
+			ydist = distance;
 
 			// if x grid line is closer ...
 			if(xdist < ydist)
 			{
 				// calculate maze grid coordinates of square:
-				xmaze = xcross_x / 64;
-				ymaze = xcross_y / 64;
+				xmaze = fix_xcross_x >> 22;
+				ymaze = fix_xcross_y >> 22;
 
 				// set x and y to point of ray intersection:
-				x = xcross_x;
-				y = xcross_y;
+				fix_x = fix_xcross_x;
+				fix_y = fix_xcross_y;
 
 				// find relevant column of texture map:
-				tmcolumn = (int)y &0x3f;
+				tmcolumn = (fix_y >> SHIFT) &0x3f;
 
 				// is there a maze cube here? If so, stop looping:
 				if(map[xmaze][ymaze]) break;
@@ -348,15 +272,15 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 			else	// if y grid line is closer:
 			{
 				// calculate maze grid coordinates of square:
-				xmaze = ycross_x / 64;
-				ymaze = ycross_y / 64;
+				xmaze = fix_ycross_x >> 22;
+				ymaze = fix_ycross_y >> 22;
 
 				// set x and y to piont of ray intersection:
-				x = ycross_x;
-				y = ycross_y;
+				fix_x = fix_ycross_x;
+				fix_y = fix_ycross_y;
 
 				// find relevant column of texture map:
-				tmcolumn = (int)x &0x3f;
+				tmcolumn = (fix_x >> SHIFT) &0x3f;
 
 				// is there a maze cube here? If so, stop looping:
 				if(map[xmaze][ymaze]) break;
@@ -367,13 +291,13 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 		// *** Prepare to draw wall column:
 
 		// get distance from viewer to intersection point:
-		xd = x - xview;
-		yd = y - yview;
-		distance = (long)sqrt(xd * xd + yd * yd) * cos(column_angle);
+		distance = get_distance(degrees, column_angle, fix_x, fix_y, xview, yview);
+
 		if(distance == 0) distance = 1;
 
 		// calculate visible height of walls:
 		int height = VIEWER_DISTANCE * WALL_HEIGHT / distance;
+		if(!height) height = 1;
 
 		// calculate bottom of wall on screen:
 		int bot = VIEWER_DISTANCE * viewer_height / distance + VIEWPORT_CENTER;
@@ -382,145 +306,52 @@ void draw_maze(map_type map, map_type flor, map_type ceiling,
 		int top = bot - height + 1;
 
 		// initialize temporary offset into texture map:
-		int t = tmcolumn;
+		int t = tmcolumn * 320 + IMAGE_HEIGHT;
 
 		// if top of current vertical line is outside of viewport, clip it:
-		int dheight = height;
-		int iheight = IMAGE_HEIGHT;
-		yratio = (float)WALL_HEIGHT / height;
+		long dheight = height;
+		long iheight = IMAGE_HEIGHT;
+		long fix_yratio = fixdiv((long)WALL_HEIGHT << SHIFT, (long)height << SHIFT);
+
 		if(top < VIEWPORT_TOP)
 		{
-			dheight -= (VIEWPORT_TOP - top);
-			t += (int)((VIEWPORT_TOP - top) * yratio) * 256;// 320?
-			iheight -= ((VIEWPORT_TOP - top) * yratio);
+			int diff = VIEWPORT_TOP - top;
+			dheight -= diff;
+			iheight -= (diff * fix_yratio) >> SHIFT;
 			top = VIEWPORT_TOP;
 		}
-		if(bot > VIEWPORT_BOT)
+		if(bot >= VIEWPORT_BOT)
 		{
-			dheight -= (bot - VIEWPORT_BOT);
-			iheight -= (bot - VIEWPORT_BOT) * yratio;
+			int diff = bot - VIEWPORT_BOT;
+			dheight -= diff;
+			iheight -= diff * fix_yratio >> SHIFT;
+			t -= (diff * fix_yratio) >> SHIFT;
 			bot = VIEWPORT_BOT;
 		}
 
 		// *** Draw the wall column:
 
-		// point to video memory offset for top of line:
-		offset = top * 320 + column;
+		// save top and bottom in arrays:
+		tops[column] = top;
+		bottoms[column] = bot;
 
-		// initialize vertical error term for texture map:
-		int tyerror = 64;
+		// point to video memory offset for top of line:
+		offset = bot * 320 + column;
 
 		// which graphics tile are we using?
 		int tile = map[xmaze][ymaze] - 1;
 
 		// find offset of tile and column in bitmap:
-		unsigned int tileptr = (tile / 4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
+		unsigned int tileptr = (tile / 5) * 320 * IMAGE_HEIGHT + (tile % 5) * IMAGE_WIDTH + t;
 
-		// loop through all pixels in the current vertical line,
-		// advancing offset to the next row of pixels after each pixel is drawn
-		for(int h = 0; h < iheight; h++)
-		{
-			// are we ready to draw a pixel?
-			while(tyerror >= IMAGE_HEIGHT)
-			{
-				// if so, draw it:
-				int level = litelevel[distance] + ambient_level + flor_lites[xmaze][ymaze];
-				if(level > MAXLIGHT) level = MAXLIGHT;
-				screen[offset] = litesource[level][textmaps[tileptr]];
-
-				// reset error term:
-				tyerror -= IMAGE_HEIGHT;
-
-				// and advance offset to next screen line:
-				offset += 320;
-			}
-			// incremental division:
-			tyerror += height;
-
-			// advance tileptr to next line of bitmap:
-			tileptr += 256;// 320?
-		}
+		long fix_increment = fixdiv(iheight << SHIFT, dheight << SHIFT);
+		int level = litelevel[distance] + ambient_level;
+		if(level > MAXLIGHT) level = MAXLIGHT;
 		///*
-		// step through floor pixels
-		for(int row = bot + 1; row <= VIEWPORT_BOT; row++)
-		{
-			// get ratio of viewer's height to pixel height:
-			float ratio = (float)viewer_height / (row - 100);
-
-			// get distance to visible pixel:
-			distance = ratio * VIEWER_DISTANCE / cos(column_angle);
-
-			// rotate distance to ray angle:
-			int x = - distance * (sin(radians));
-			int y = distance * (cos(radians));
-
-			// translate relative to viewer coordinates:
-			x += xview;
-			y += yview;
-
-			// get maze square intersected by ray:
-			int xmaze = x / 64;
-			int ymaze = y / 64;
-
-			// find relevant column of texture map:
-			int t = ((int)y & 0x3f) * 256 + ((int)x & 0x3f);
-
-			// which graphics tile are we using?
-			int tile = flor[xmaze][ymaze] - 1;
-
-			// find offset of tile and column in bitmap:
-			unsigned int tileptr = (tile/4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
-
-			// calculate video offset of floor pixel:
-			offset = row * 320 + column;
-
-			// draw pixel:
-			int level = litelevel[distance] + ambient_level + flor_lites[xmaze][ymaze];
-			if(level > MAXLIGHT) level = MAXLIGHT;
-			screen[offset] = litesource[level][textmaps[tileptr]];
-		}
+		drawwall(&(screen[offset]), &(textmaps[tileptr]), dheight,
+				fix_increment, &(litesource[level][0]));
 		//*/
-		///*
-		// step through ceiling pixels
-		for(row = top - 1; row >= VIEWPORT_TOP; --row)
-		{
-			// get ratio of viewer's height to pixel height:
-			float ratio = (float)(WALL_HEIGHT - viewer_height) / (100 - row);
 
-			// get distance to visible pixel:
-			distance = ratio * VIEWER_DISTANCE / cos(column_angle);
-
-			// rotate distance to ray angle:
-			int x = - distance * (sin(radians));
-			int y = distance * (cos(radians));
-
-			// translate relative to viewer coordinates:
-			x += xview;
-			y += yview;
-
-			// get maze square intersected by ray:
-			int xmaze = x / 64;
-			int ymaze = y / 64;
-
-			// find relevant column of texture map:
-			int t = ((int)y & 0x3f) * 256 + ((int)x & 0x3f);
-
-			// which graphics tile are we using?
-			int tile = ceiling[xmaze][ymaze] - 1;
-
-			// find offset of tile and column in bitmap:
-			unsigned int tileptr = (tile/4) * 256 * IMAGE_HEIGHT + (tile % 4) * IMAGE_WIDTH + t;
-
-			// calculate video offset of ceiling pixel:
-			offset = row * 320 + column;
-
-			// draw pixel:
-			int level = litelevel[distance] + ambient_level + ceiling_lites[xmaze][ymaze];
-			if(level > MAXLIGHT) level = MAXLIGHT;
-			screen[offset] = litesource[level][textmaps[tileptr]];
-
-		}
-		//*/
 	} // for each column in viewport
 
 }
