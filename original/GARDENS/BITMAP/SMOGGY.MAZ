@@ -1,0 +1,9 @@
+#declare AmbientLevel=.25
+#declare WallTexture=texture{Grnt3 phong 0 turbulence 1}
+#declare WallTextureScale=<.75 .75 .75>
+#declare FloorTexture=texture{checker color SeaGreen color White}
+#declare FloorTextureScale=<.5 .5 .5>
+#declare FloorReflection=.13
+#declare CeilingTexture=texture{color Tan bumps 0.3}
+#declare CeilingTextureScale=<1 1 1>
+#declare CeilingAmbientLevel=1

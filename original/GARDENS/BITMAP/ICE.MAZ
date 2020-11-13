@@ -1,0 +1,13 @@
+// NEW.MAZ
+// Maze parameter file by Christopher Lampton
+// for GARDENS OF IMAGINATION (Waite Group Press)
+
+#declare AmbientLevel=.25
+#declare WallTexture=texture{Stone17 phong 0}
+#declare WallTextureScale=<.75 .75 .75>
+#declare FloorTexture=texture{color White}
+#declare FloorTextureScale=<.5 .5 .5>
+#declare FloorReflection=.13
+#declare CeilingTexture=texture{Blue_Sky3}
+#declare CeilingTextureScale=<2 2 2>
+#declare CeilingAmbientLevel=1.0

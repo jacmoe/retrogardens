@@ -1,0 +1,9 @@
+#declare AmbientLevel=.45
+#declare WallTexture=texture{Stone18 phong .1 turbulence 1}
+#declare WallTextureScale=<.75 .75 .75>
+#declare FloorTexture=texture{checker color Copper color White}
+#declare FloorTextureScale=<.5 .5 .5>
+#declare FloorReflection=.14
+#declare CeilingTexture=texture{Bright_Blue_Sky}
+#declare CeilingTextureScale=<1 1 1>
+#declare CeilingAmbientLevel=1.0

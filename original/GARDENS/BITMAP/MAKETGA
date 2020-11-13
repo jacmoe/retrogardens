@@ -1,0 +1,5 @@
+set fileformat TARGA
+load %1.tga
+pload maze.map
+map
+save %1.tga

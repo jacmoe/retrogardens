@@ -1,0 +1,12 @@
+set display VGA1
+gload mazebg.gif
+unmap
+load comptemp.tga
+overlay 20 35
+load side1.tga
+overlay 110 0
+makepal
+map
+psave maze.map
+show
+

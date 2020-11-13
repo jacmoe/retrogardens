@@ -1,0 +1,9 @@
+#declare AmbientLevel=.45
+#declare WallTexture=texture{marble phong .1 turbulence 1}
+#declare WallTextureScale=<1 1 1>
+#declare FloorTexture=texture{color White}
+#declare FloorTextureScale=<1 1 1>
+#declare FloorReflection=.17
+#declare CeilingTexture=texture{Blood_Sky}
+#declare CeilingTextureScale=<1 1 1>
+

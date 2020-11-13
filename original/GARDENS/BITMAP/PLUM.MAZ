@@ -1,0 +1,12 @@
+// PLUM.MAZ
+// Maze parameter file by Christopher Lampton
+// for GARDENS OF IMAGINATION (Waite Group Press)
+
+#declare AmbientLevel=.25
+#declare WallTexture=texture{Grnt13 phong 0}
+#declare WallTextureScale=<.75 .75 .75>
+#declare FloorTexture=texture{checker color Coral color White}
+#declare FloorTextureScale=<.5 .5 .5>
+#declare FloorReflection=.13
+#declare CeilingTexture=texture{color Plum bumps 0.3}
+#declare CeilingTextureScale=<1 1 1>

@@ -1,0 +1,4 @@
+set fileformat "TARGA"
+tload %1.tga
+makepal
+psave maze.map
