@@ -1,4 +1,5 @@
-** Update ** [Retronew][retronew] is an attempt which follows the original code more closely, and without any external dependencies.d
+**Update** [Retronew][retronew] is an attempt which follows the original code more closely, and without any external dependencies.
+------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # retrogardens
 16bit retro programming in DosBox with Borland C++ 3.1 Turbo Pascal 7 and TASM
