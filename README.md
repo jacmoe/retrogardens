@@ -1,6 +1,6 @@
 **Update**
 
-[Retronew][retronew] is an attempt which follows the original code more closely, and without any external dependencies.
+[Retronew][retronew] is a modern equivalent using [olcPixelGameEngine][olcpixel].
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -230,6 +230,8 @@ Some code from the *dos/programming* section of the [x2ftp.oulu.fi mirror][x2ftp
 
 
 [retronew]: https://github.com/jacmoe/retronew "Retronew"
+
+[olcpixel]: https://github.com/OneLoneCoder/olcPixelGameEngine "olcPixelGameEngine"
 
 [1992compile]: http://fabiensanglard.net/Compile_Like_Its_1992/index.php "Compile Like Its 1992"
 
