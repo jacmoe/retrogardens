@@ -1,3 +1,5 @@
+** Update ** [Retronew][retronew] is an attempt which follows the original code more closely, and without any external dependencies.d
+
 # retrogardens
 16bit retro programming in DosBox with Borland C++ 3.1 Turbo Pascal 7 and TASM
 
@@ -222,6 +224,8 @@ Some code from the *dos/programming* section of the [x2ftp.oulu.fi mirror][x2ftp
 
 --------------------------------
 
+
+[retronew]: https://github.com/jacmoe/retronew "Retronew"
 
 [1992compile]: http://fabiensanglard.net/Compile_Like_Its_1992/index.php "Compile Like Its 1992"
 
