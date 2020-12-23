@@ -1,4 +1,7 @@
-**Update** [Retronew][retronew] is an attempt which follows the original code more closely, and without any external dependencies.
+**Update**
+
+[Retronew][retronew] is an attempt which follows the original code more closely, and without any external dependencies.
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # retrogardens
