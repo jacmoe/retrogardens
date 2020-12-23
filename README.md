@@ -220,7 +220,7 @@ Copy the files to the `bin` directory and run `PATCH PATCH700` (or PATCH701, dep
 --------------------------------
 
 ## Credits
-* General ideas and code from Christopher Lampton's book [Gardens of Imagination][gardens] (1994 - Waite Group)
+* General ideas and code from Christopher Lampton's book [Gardens of Imagination][gardens] (1994 - Waite Group) Also available from the [Internet Archive][gardens_arch]
 * VGA code from David Brackeen's [256-Color VGA Programming in C][vgainc] tutorial.
 * Keyboard code from Al Stevens' [Raycaster article - Dr. Dobb's Journal][raycast]
 
@@ -248,6 +248,8 @@ Some code from the *dos/programming* section of the [x2ftp.oulu.fi mirror][x2ftp
 [pal]: https://github.com/jacmoe/retrogardens/raw/master/screenshots/pal.jpg "Palette"
 
 [gardens]: https://www.amazon.com/Gardens-Imagination-Programming-Maze-Games/dp/187873959X "Gardens of Imagination"
+
+[gardens_arch]: https://archive.org/details/gardensofimagina00lamp "Gardens of Imagination from the Internet Archive"
 
 [raycast]: http://www.drdobbs.com/windows/windows-casting-rays-and-developer-days/windows/sourcecode/windows-casting-rays-and-developer-days/30300258 "Raycaster"
 
