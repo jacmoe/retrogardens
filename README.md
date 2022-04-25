@@ -1,6 +1,6 @@
 **Update**
 
-[Retronew][retronew] is a modern equivalent using [olcPixelGameEngine][olcpixel].
+[Retronew][retronew] is a modern equivalent using [Allegro][allegro].
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -231,7 +231,7 @@ Some code from the *dos/programming* section of the [x2ftp.oulu.fi mirror][x2ftp
 
 [retronew]: https://github.com/jacmoe/retronew "Retronew"
 
-[olcpixel]: https://github.com/OneLoneCoder/olcPixelGameEngine "olcPixelGameEngine"
+[allegro]: https://liballeg.org/ "Allegro"
 
 [1992compile]: http://fabiensanglard.net/Compile_Like_Its_1992/index.php "Compile Like Its 1992"
 
