@@ -1,3 +1,11 @@
+* retrogardens [Moved to codeberg]
+
+*Achtung*: This repository will not be updated.
+
+If something new happens with this project, it will happen at -> https://codeberg.org/jacmoe/retrogardens
+
+----------------------------------------------------------------------------------
+
 **Update**
 
 [Retronew][retronew] is a modern equivalent using [Allegro][allegro].
@@ -229,7 +237,7 @@ Some code from the *dos/programming* section of the [x2ftp.oulu.fi mirror][x2ftp
 --------------------------------
 
 
-[retronew]: https://github.com/jacmoe/retronew "Retronew"
+[retronew]: https://codeberg.org/jacmoe/retronew "Retronew"
 
 [allegro]: https://liballeg.org/ "Allegro"
 
